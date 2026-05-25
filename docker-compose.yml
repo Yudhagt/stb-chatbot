@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: urbanmotion-ai-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: urbanmotion
+      POSTGRES_PASSWORD: urbanmotion123
+      POSTGRES_DB: urbanmotion_ai
+    ports:
+      - "5432:5432"
+    volumes:
+      - urbanmotion_ai_pgdata:/var/lib/postgresql/data
+
+volumes:
+  urbanmotion_ai_pgdata:

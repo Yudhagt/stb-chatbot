@@ -1,0 +1,237 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "x5lab/claude-sonnet-4.5",
+  "small_model": "x5lab/gpt-4o",
+  "default_agent": "build",
+
+  "provider": {
+    "x5lab": {
+      "name": "x5lab",
+      "npm": "@ai-sdk/openai-compatible",
+      "options": {
+        "baseURL": "https://api.x5lab.dev/v1",
+        "apiKey": "x5-59e42333f16e1d802ab9b35c90781eeb"
+      },
+      "models": {
+        "claude-opus-4.6": {
+          "name": "Claude Opus 4.6",
+          "limit": { "context": 1000000, "output": 243000 },
+          "modalities": { "input": ["text", "image"], "output": ["text"] }
+        },
+        "claude-sonnet-4.5": {
+          "name": "Claude Sonnet 4.5",
+          "limit": { "context": 200000, "output": 64000 },
+          "modalities": { "input": ["text", "image"], "output": ["text"] }
+        },
+        "claude-sonnet-4": {
+          "name": "Claude Sonnet 4",
+          "limit": { "context": 200000, "output": 64000 },
+          "modalities": { "input": ["text", "image"], "output": ["text"] }
+        },
+        "claude-haiku-4.5": {
+          "name": "Claude Haiku 4.5",
+          "limit": { "context": 200000, "output": 64000 },
+          "modalities": { "input": ["text", "image"], "output": ["text"] }
+        },
+        "gpt-5.5": {
+          "name": "GPT-5.5",
+          "limit": { "context": 400000, "output": 128000 },
+          "modalities": { "input": ["text", "image"], "output": ["text"] }
+        },
+        "gpt-5.4": {
+          "name": "GPT-5.4",
+          "limit": { "context": 400000, "output": 128000 },
+          "modalities": { "input": ["text", "image"], "output": ["text"] }
+        },
+        "gpt-5.3-codex": {
+          "name": "GPT-5.3 Codex",
+          "limit": { "context": 400000, "output": 128000 },
+          "modalities": { "input": ["text", "image"], "output": ["text"] }
+        },
+        "gpt-5.2": {
+          "name": "GPT-5.2",
+          "limit": { "context": 400000, "output": 128000 },
+          "modalities": { "input": ["text", "image"], "output": ["text"] }
+        },
+        "gpt-5.1": {
+          "name": "GPT-5.1",
+          "limit": { "context": 400000, "output": 128000 },
+          "modalities": { "input": ["text", "image"], "output": ["text"] }
+        },
+        "gpt-5.1-codex": {
+          "name": "GPT-5.1 Codex",
+          "limit": { "context": 400000, "output": 128000 },
+          "modalities": { "input": ["text", "image"], "output": ["text"] }
+        },
+        "gpt-5.1-codex-max": {
+          "name": "GPT-5.1 Codex Max",
+          "limit": { "context": 400000, "output": 128000 },
+          "modalities": { "input": ["text", "image"], "output": ["text"] }
+        },
+        "gpt-4o": {
+          "name": "GPT-4o",
+          "limit": { "context": 128000, "output": 16000 },
+          "modalities": { "input": ["text", "image"], "output": ["text"] }
+        },
+        "gemini-3.1-pro": {
+          "name": "Gemini 3.1 Pro",
+          "limit": { "context": 1000000, "output": 65000 },
+          "modalities": { "input": ["text", "image", "audio"], "output": ["text"] }
+        },
+        "gemini-3.1-flash-lite": {
+          "name": "Gemini 3.1 Flash Lite",
+          "limit": { "context": 1000000, "output": 65000 },
+          "modalities": { "input": ["text", "image", "audio"], "output": ["text"] }
+        },
+        "gemini-3.0-pro": {
+          "name": "Gemini 3.0 Pro",
+          "limit": { "context": 1000000, "output": 65000 },
+          "modalities": { "input": ["text", "image"], "output": ["text"] }
+        },
+        "gemini-2.5-pro": {
+          "name": "Gemini 2.5 Pro",
+          "limit": { "context": 1000000, "output": 65000 },
+          "modalities": { "input": ["text", "image"], "output": ["text"] }
+        },
+        "deepseek-v3": {
+          "name": "DeepSeek V3",
+          "limit": { "context": 200000, "output": 64000 },
+          "modalities": { "input": ["text"], "output": ["text"] }
+        },
+        "deepseek-chat": {
+          "name": "DeepSeek Chat",
+          "limit": { "context": 128000, "output": 16000 },
+          "modalities": { "input": ["text"], "output": ["text"] }
+        },
+        "qwen3-coder-next": {
+          "name": "Qwen3 Coder Next",
+          "limit": { "context": 200000, "output": 64000 },
+          "modalities": { "input": ["text"], "output": ["text"] }
+        },
+        "kimi-k2.5": {
+          "name": "Kimi K2.5",
+          "limit": { "context": 250000, "output": 65000 },
+          "modalities": { "input": ["text", "image"], "output": ["text"] }
+        },
+        "minimax-m2.5": {
+          "name": "MiniMax M2.5",
+          "limit": { "context": 200000, "output": 64000 },
+          "modalities": { "input": ["text"], "output": ["text"] }
+        },
+        "glm-5": {
+          "name": "GLM-5",
+          "limit": { "context": 200000, "output": 64000 },
+          "modalities": { "input": ["text"], "output": ["text"] }
+        }
+      }
+    }
+  },
+
+  "agent": {
+    "reviewer": {
+      "model": "x5lab/claude-sonnet-4.5",
+      "mode": "subagent",
+      "description": "Review code changes for bugs, style issues, and best practices in the Stb_Chatbot project",
+      "color": "#ef4444",
+      "permission": { "read": "allow", "edit": "deny", "bash": "ask", "grep": "allow", "glob": "allow" },
+      "prompt": "You are a strict code reviewer for the Stb_Chatbot (Stb_Chatbot) project. Focus on: 1) React/JSX best practices, 2) Express.js security, 3) Prisma query optimization, 4) TailwindCSS consistency, 5) Potential bugs or edge cases. Be thorough but constructive."
+    },
+    "planner": {
+      "model": "x5lab/claude-sonnet-4.5",
+      "mode": "subagent",
+      "description": "Analyze features and create step-by-step implementation plans for Stb_Chatbot",
+      "color": "#3b82f6",
+      "permission": { "read": "allow", "edit": "deny", "bash": "ask", "grep": "allow", "glob": "allow" },
+      "prompt": "You are a technical planner for the Stb_Chatbot (Stb_Chatbot) project. Given a feature request: 1) Analyze what files need to change, 2) Break down into ordered steps, 3) Note potential risks or dependencies, 4) Suggest which x5lab model is best suited (Sonnet for frontend, Opus for complex backend logic, Codex for debugging)."
+    },
+    "tester": {
+      "model": "x5lab/deepseek-v3",
+      "mode": "subagent",
+      "description": "Write and run tests for the Stb_Chatbot application",
+      "color": "#22c55e",
+      "permission": { "read": "allow", "edit": "allow", "bash": "allow", "grep": "allow", "glob": "allow" },
+      "prompt": "You are a QA engineer for Stb_Chatbot. When testing: 1) Check both backend (Express routes, Prisma queries, auth flows) and frontend (React components, state management, API calls), 2) Test edge cases (empty inputs, file upload limits, rate limiting), 3) For database: check migrations, relationships, and query performance."
+    },
+    "devops": {
+      "model": "x5lab/deepseek-v3",
+      "mode": "subagent",
+      "description": "Manage Docker, deployment, PM2, Nginx, and infrastructure for Stb_Chatbot",
+      "color": "#a855f7",
+      "permission": { "read": "allow", "edit": "allow", "bash": "allow", "grep": "allow", "glob": "allow" },
+      "prompt": "You are a DevOps engineer for Stb_Chatbot. Manage: 1) Docker Compose for PostgreSQL, 2) PM2 ecosystem.config.cjs for process management, 3) Nginx reverse proxy configs in nginx/, 4) Environment .env files across backend/frontend, 5) Deployment to production (urbanmotion.web.id). Always verify configs are valid before applying."
+    },
+    "db-manager": {
+      "model": "x5lab/claude-haiku-4.5",
+      "mode": "subagent",
+      "description": "Manage Prisma schema, migrations, and database queries for Stb_Chatbot",
+      "color": "#f59e0b",
+      "permission": { "read": "allow", "edit": "allow", "bash": "allow", "grep": "allow", "glob": "allow" },
+      "prompt": "You are a database specialist for Stb_Chatbot. The project uses PostgreSQL + Prisma ORM in backend/prisma/. Tasks: 1) Schema changes (always run npm run db:generate and npm run db:push after), 2) Write efficient queries with proper indexes, 3) Handle migrations safely, 4) Optimize daily usage tracking and conversation history queries."
+    }
+  },
+
+  "command": {
+    "dev": {
+      "description": "Start both backend and frontend dev servers concurrently",
+      "template": "Start the development servers for Stb_Chatbot. The backend runs on port 3001 and the frontend on port 5173. First check if PostgreSQL is running with `docker compose ps`, then start backend with `cd backend && npm run dev` in one terminal, and frontend with `cd frontend && npm run dev` in another."
+    },
+    "build": {
+      "description": "Build the frontend for production",
+      "template": "Build the frontend for production: `cd frontend && npm run build`. Verify the build output in frontend/dist/ exists and is non-empty."
+    },
+    "deploy": {
+      "description": "Deploy backend to production with PM2",
+      "template": "Deploy the Stb_Chatbot backend to production. Use the @devops agent. Follow the deployment instructions in docs/ if available. Steps: 1) Build frontend, 2) Copy frontend/dist to the server, 3) Restart PM2 with `pm2 restart ecosystem.config.cjs`, 4) Verify health endpoint at /api/health returns ok."
+    },
+    "test": {
+      "description": "Run tests using the tester agent",
+      "template": "Use the @tester agent to analyze the codebase, identify what needs testing, and run available tests."
+    },
+    "db-reset": {
+      "description": "Reset the PostgreSQL database and reapply Prisma schema",
+      "template": "Reset the database: `cd backend && npx prisma db push --force-reset`. WARNING: This will delete all data. Confirm with the user before proceeding."
+    },
+    "lint": {
+      "description": "Run ESLint on the entire project",
+      "template": "Run ESLint across the project: `npm run lint` from the project root. Fix any auto-fixable issues with `npx eslint . --fix`."
+    },
+    "logs": {
+      "description": "View production PM2 logs",
+      "template": "View PM2 logs for the Stb_Chatbot production server. Run `pm2 logs` to see real-time logs, or `pm2 logs --lines 50` for the last 50 lines."
+    },
+    "db-studio": {
+      "description": "Open Prisma Studio to browse the database",
+      "template": "Open Prisma Studio for the database: `cd backend && npx prisma studio`. This opens a browser-based database GUI."
+    },
+    "x5-models": {
+      "description": "List all available x5lab models and switch the current model",
+      "template": "Review the available x5lab models in opencode.json under provider.x5lab.models and help the user switch between them by updating the 'model' field."
+    }
+  },
+
+  "instructions": ["AGENTS.md"],
+
+  "mcp": {
+    "github": {
+      "type": "remote",
+      "url": "https://api.github.com",
+      "enabled": false
+    }
+  },
+
+  "permission": {
+    "bash": { "git *": "allow", "npm *": "allow", "npx prisma *": "allow", "pm2 *": "allow", "docker *": "ask", "*": "ask" },
+    "edit": "allow",
+    "read": "allow"
+  },
+
+  "tool_output": {
+    "max_lines": 500,
+    "max_bytes": 102400
+  },
+
+  "compaction": {
+    "auto": true,
+    "tail_turns": 10
+  }
+}

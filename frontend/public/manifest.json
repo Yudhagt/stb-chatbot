@@ -1,0 +1,16 @@
+{
+  "name": "Stb_Chatbot",
+  "short_name": "Stb_Chatbot",
+  "description": "Chatbot publik multi-model dengan akun, OAuth, email verification, dan history chat.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#212121",
+  "theme_color": "#212121",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
