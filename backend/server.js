@@ -1463,7 +1463,9 @@ app.get("/api/auth/github/callback", async (req, res) => {
     const url = new URL(appUrl("auth/callback"));
     url.searchParams.set("token", appToken);
     res.redirect(url.toString());
-  });
+  } catch (error) {
+    return redirectAuthError(res, error.message);
+  }
 });
 
 app.post("/api/auth/verify-email/send", auth, async (req, res) => {
