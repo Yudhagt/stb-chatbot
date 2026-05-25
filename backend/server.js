@@ -157,32 +157,71 @@ function avatarUploadSingle(req, res, next) {
 }
 
 
+const FULL_MODEL_LIST = [
+  { id: "claude-haiku-4.5", provider: "Claude", label: "Haiku 4.5" },
+  { id: "claude-haiku-4-5-20251001", provider: "Claude", label: "Haiku 4.5 (Oct 2025)" },
+  { id: "claude-sonnet-4.5", provider: "Claude", label: "Sonnet 4.5" },
+  { id: "claude-opus-4.6", provider: "Claude", label: "Opus 4.6" },
+  { id: "claude-opus-4-6", provider: "Claude", label: "Opus 4.6 (alt)" },
+  { id: "claude-opus-4.7", provider: "Claude", label: "Opus 4.7" },
+  { id: "deepseek-3.2", provider: "DeepSeek", label: "V3.2" },
+  { id: "deepseek-v4-flash", provider: "DeepSeek", label: "V4 Flash" },
+  { id: "deepseek-v4-pro", provider: "DeepSeek", label: "V4 Pro" },
+  { id: "deepseek/deepseek-chat", provider: "DeepSeek", label: "DeepSeek Chat" },
+  { id: "deepseek/deepseek-reasoner", provider: "DeepSeek", label: "DeepSeek Reasoner" },
+  { id: "gemini-2.0-flash-lite", provider: "Gemini", label: "2.0 Flash Lite" },
+  { id: "gemini-3-flash-preview", provider: "Gemini", label: "3 Flash Preview" },
+  { id: "gemini-3-pro-preview", provider: "Gemini", label: "3 Pro Preview" },
+  { id: "gemini-3.1-flash-lite-preview", provider: "Gemini", label: "3.1 Flash Lite" },
+  { id: "gemini-3.1-pro-preview", provider: "Gemini", label: "3.1 Pro Preview" },
+  { id: "google/gemini-2.5-flash", provider: "Gemini", label: "2.5 Flash" },
+  { id: "google/gemini-2.5-pro", provider: "Gemini", label: "2.5 Pro" },
+  { id: "MiniMax-M2.5", provider: "Other", label: "MiniMax M2.5" },
+  { id: "glm-5", provider: "Other", label: "GLM-5" },
+  { id: "glm-5.1", provider: "Other", label: "GLM-5.1" },
+  { id: "openai/o3", provider: "Other", label: "OpenAI o3" },
+  { id: "qwen3-coder-next", provider: "Other", label: "Qwen 3 Coder" },
+  { id: "gemma-4-31b-it", provider: "Other", label: "Gemma 4 31B" }
+];
+
+function getModelConfig(key) {
+  if (MODEL_CONFIG[key]) return MODEL_CONFIG[key];
+  const found = FULL_MODEL_LIST.find(m => m.id === key);
+  return {
+    id: key,
+    label: found?.label || key,
+    description: found ? `${found.provider} ${found.label}` : key,
+    vision: true,
+    allowedForFree: true
+  };
+}
+
 const MODEL_CONFIG = {
   fast: {
     id: process.env.MODEL_FAST || "claude-haiku-4.5",
     label: "Fast",
-    description: "Cepat & hemat token",
+    description: "Claude Haiku cepat & ringan",
     vision: false,
     allowedForFree: true
   },
   balanced: {
-    id: process.env.MODEL_BALANCED || "deepseek-v3",
+    id: process.env.MODEL_BALANCED || "deepseek-3.2",
     label: "Balanced",
-    description: "Default pertanyaan umum",
-    vision: false,
+    description: "DeepSeek 3.2 serba guna",
+    vision: true,
     allowedForFree: true
   },
   smart: {
     id: process.env.MODEL_SMART || "claude-sonnet-4.5",
     label: "Smart",
-    description: "Analisis lebih kuat",
-    vision: false,
+    description: "Claude Sonnet analisis kuat",
+    vision: true,
     allowedForFree: false
   },
   coding: {
     id: process.env.MODEL_CODING || "qwen3-coder-next",
     label: "Coding",
-    description: "Coding & debugging",
+    description: "Qwen 3 Coder coding & debug",
     vision: false,
     allowedForFree: false
   }
@@ -363,7 +402,7 @@ async function sendMail({ to, subject, html, text }) {
   });
 
   await transporter.sendMail({
-    from: process.env.SMTP_FROM || "Stb_Chatbot <noreply@urbanmotion.web.id>",
+    from: process.env.SMTP_FROM || "Stb_Chatbot <noreply@stbchatbot.id>",
     to,
     subject,
     text,
@@ -1098,20 +1137,24 @@ let cachedModelsAt = 0;
 const MODEL_CACHE_TTL = 60000;
 
 app.get("/api/models", (req, res) => {
-  if (cachedModels && Date.now() - cachedModelsAt < MODEL_CACHE_TTL) {
-    res.set("X-Cache", "HIT");
-    return res.json(cachedModels);
-  }
-  cachedModels = Object.entries(MODEL_CONFIG).map(([key, value]) => ({
+  const presets = Object.entries(MODEL_CONFIG).map(([key, value]) => ({
     key,
     label: value.label,
     description: value.description,
     vision: value.vision,
-    allowedForFree: value.allowedForFree
+    allowedForFree: value.allowedForFree,
+    modelId: value.id
   }));
-  cachedModelsAt = Date.now();
-  res.set("X-Cache", "MISS");
-  res.json(cachedModels);
+  const allModels = FULL_MODEL_LIST.map(m => ({
+    key: m.id,
+    label: `${m.provider} ${m.label}`,
+    description: m.provider,
+    vision: true,
+    allowedForFree: true,
+    modelId: m.id,
+    provider: m.provider
+  }));
+  res.json({ presets, allModels });
 });
 
 app.post("/api/auth/register", async (req, res) => {
@@ -1232,8 +1275,8 @@ app.post("/api/auth/login", async (req, res) => {
 });
 
 app.get("/api/auth/google", (req, res) => {
-  if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CALLBACK_URL) {
-    return res.status(500).send("Google OAuth belum dikonfigurasi di .env.");
+  if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET || !process.env.GOOGLE_CALLBACK_URL) {
+    return res.status(500).send("Google OAuth belum dikonfigurasi di .env. Isi GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, dan GOOGLE_CALLBACK_URL.");
   }
 
   const state = createOAuthState("google");
@@ -1800,7 +1843,7 @@ app.delete("/api/conversations", auth, async (req, res) => {
 app.post("/api/conversations/:id/regenerate", auth, async (req, res) => {
   try {
     const selectedKey = String(req.body.model || "balanced").trim();
-    const model = MODEL_CONFIG[selectedKey];
+    const model = getModelConfig(selectedKey);
 
     if (!model) {
       return res.status(400).json({ error: "Model tidak valid." });
@@ -2173,7 +2216,7 @@ app.post("/api/chat", auth, uploadSingle, async (req, res) => {
       });
     }
 
-    const model = MODEL_CONFIG[selectedKey];
+    const model = getModelConfig(selectedKey);
 
     if (!model) {
       return res.status(400).json({
@@ -2291,7 +2334,7 @@ app.post("/api/chat", auth, uploadSingle, async (req, res) => {
         file,
         history: orderedHistory,
         contextText,
-        sendImageBlock: false
+        sendImageBlock: Boolean(model.vision && file && isImageFile(file))
       });
     } catch (error) {
       const status = error.status || 500;
@@ -2404,7 +2447,7 @@ app.post("/api/chat/stream", auth, uploadSingle, async (req, res) => {
       return res.status(400).json({ error: "Pesan terlalu panjang. Maksimal 5000 karakter." });
     }
 
-    const model = MODEL_CONFIG[selectedKey];
+    const model = getModelConfig(selectedKey);
     if (!model) return res.status(400).json({ error: "Model tidak valid." });
 
     if (req.user.role !== "ADMIN" && !model.allowedForFree) {
@@ -2517,70 +2560,7 @@ app.post("/api/chat/stream", auth, uploadSingle, async (req, res) => {
         file,
         history: orderedHistory,
         contextText,
-        sendImageBlock: false
-      });
-
-      const reader = stream.getReader();
-      const decoder = new TextDecoder();
-      let buffer = "";
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split("\n");
-        buffer = lines.pop() || "";
-
-        for (const line of lines) {
-          if (line.startsWith("data: ")) {
-            const jsonStr = line.slice(6).trim();
-            if (jsonStr === "[DONE]") continue;
-            try {
-              const chunk = JSON.parse(jsonStr);
-              const delta = chunk?.choices?.[0]?.delta?.content || "";
-              if (delta) {
-                fullContent += delta;
-                sendEvent("chunk", { content: delta, fullContent });
-              }
-            } catch { /* skip invalid JSON */ }
-          }
-        }
-      }
-
-      const totalTokens = estimateTokens(fullContent);
-
-      const assistantMessage = await prisma.message.create({
-        data: {
-          conversationId: conversation.id,
-          userId: req.user.id,
-          role: "ASSISTANT",
-          content: fullContent,
-          model: selectedKey
-        }
-      });
-
-      await prisma.dailyUsage.update({
-        where: { userId_date: { userId: req.user.id, date: todayStart() } },
-        data: { messageCount: { increment: 1 }, tokenCount: { increment: totalTokens } }
-      });
-
-      await prisma.conversation.update({
-        where: { id: conversation.id },
-        data: { model: selectedKey, updatedAt: new Date() }
-      });
-
-      sendEvent("done", {
-        assistantMessage: {
-          ...assistantMessage,
-          id: assistantMessage.id,
-          role: "ASSISTANT",
-          content: fullContent,
-          model: selectedKey,
-          conversationId: conversation.id,
-          createdAt: assistantMessage.createdAt
-        },
-        usage: { messageCount: usage.messageCount + 1, tokenCount: totalTokens, limit }
+        sendImageBlock: Boolean(model.vision && file && isImageFile(file))
       });
     } catch (error) {
       const errorMsg = error.message || "Stream error";

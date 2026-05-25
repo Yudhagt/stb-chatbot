@@ -624,6 +624,82 @@ button { -webkit-tap-highlight-color: transparent; cursor: pointer; }
 .model-tabs button.locked:hover { transform: none; background: transparent; border-color: var(--border); }
 .model-tabs em { display: none; }
 
+.model-switch { position: relative; }
+.model-switch-btn {
+  height: 36px;
+  border: 1.5px solid var(--border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 12px 0 14px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all .2s ease;
+  white-space: nowrap;
+}
+.model-switch-btn:hover { border-color: var(--accent); background: var(--accent-soft); }
+.model-switch-btn .chevron { transition: transform .2s; color: var(--muted); }
+.model-switch-btn .chevron.open { transform: rotate(180deg); }
+
+.model-switch-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  min-width: 280px;
+  max-height: min(480px, calc(100vh - 100px));
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--sidebar);
+  box-shadow: 0 12px 50px rgba(0,0,0,0.4);
+  padding: 6px;
+  display: grid;
+  gap: 2px;
+  z-index: 20;
+  animation: fadeUp .15s ease;
+}
+.model-switch-dropdown::-webkit-scrollbar { width: 4px; }
+.model-switch-dropdown::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+.model-option {
+  display: grid;
+  grid-template-columns: 32px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  border: 0;
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+  transition: all .15s;
+}
+.model-option:hover { background: var(--surface); }
+.model-option.active { background: var(--accent-soft); }
+.model-option.locked { opacity: .4; cursor: not-allowed; }
+.model-option strong { display: block; font-size: 13px; font-weight: 600; }
+.model-option span { display: block; margin-top: 2px; color: var(--muted); font-size: 11px; }
+.model-option svg { color: var(--accent); flex-shrink: 0; }
+.model-option small {
+  font-size: 10px; font-weight: 700; color: var(--muted-2);
+  background: var(--surface); border-radius: 6px; padding: 2px 8px;
+}
+.model-group-label {
+  font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em;
+  padding: 8px 12px 4px; color: var(--muted-2);
+}
+.model-divider { height: 1px; background: var(--border); margin: 6px 8px; }
+.model-preview {
+  font-size: 10px; font-weight: 500; color: var(--muted-2);
+  background: var(--surface); border-radius: 6px; padding: 2px 6px;
+  max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
 .topbar-actions { margin-left: auto; display: flex; align-items: center; gap: 4px; }
 
 .icon-btn {
@@ -1155,6 +1231,11 @@ button { -webkit-tap-highlight-color: transparent; cursor: pointer; }
   padding: 0 16px;
   font-size: 14px;
   transition: border-color .2s, box-shadow .2s;
+}
+.settings-form select option,
+.settings-form select optgroup {
+  background: #1a1a2e;
+  color: #f0f0f5;
 }
 
 .settings-form input:focus, .settings-form select:focus {

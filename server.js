@@ -2,6 +2,17 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import OpenAI from "openai";
+import { supabase } from './supabaseClient.js'
+
+const ambilData = async () => {
+  const { data, error } = await supabase
+    .from('users')
+    .select('*')
+
+  console.log(data)
+}
+
+ambilData()
 
 dotenv.config();
 

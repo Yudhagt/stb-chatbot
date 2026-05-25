@@ -18,7 +18,6 @@ import {
   Github,
   FileText,
   MailCheck,
-  Image as ImageIcon,
   Settings,
   UserRound,
   LockKeyhole,
@@ -29,7 +28,8 @@ import {
   Check,
   Pencil,
   RotateCcw,
-  BarChart3
+  BarChart3,
+  Activity
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -39,39 +39,46 @@ import "./App.css";
 
 const API_URL = import.meta.env.VITE_API_URL || "";
 
-const MODEL_LIST = [
-  {
-    key: "fast",
-    label: "Fast",
-    desc: "Cepat & hemat token",
-    icon: Zap,
-    vision: false,
-    free: true
-  },
-  {
-    key: "balanced",
-    label: "Balanced",
-    desc: "Default pertanyaan umum",
-    icon: Sparkles,
-    vision: false,
-    free: true
-  },
-  {
-    key: "smart",
-    label: "Smart",
-    desc: "Analisis lebih kuat",
-    icon: Brain,
-    vision: false,
-    free: false
-  },
-  {
-    key: "coding",
-    label: "Coding",
-    desc: "Coding & debugging",
-    icon: Code2,
-    vision: false,
-    free: false
-  }
+const MODEL_PRESETS = [
+  { key: "fast",    label: "Fast",     desc: "DeepSeek V4 Flash cepat",       icon: Zap,     vision: false, free: true },
+  { key: "balanced",label: "Balanced", desc: "DeepSeek 3.2 serba guna",       icon: Sparkles,vision: true,  free: true },
+  { key: "smart",   label: "Smart",    desc: "DeepSeek V4 Pro analisis",      icon: Brain,   vision: true,  free: false },
+  { key: "coding",  label: "Coding",   desc: "DeepSeek Reasoner coding",      icon: Code2,   vision: false, free: false }
+];
+
+const ALL_MODELS = [
+  { group: "Claude",   icon: Brain, color: "#d97706", models: [
+    { id: "claude-haiku-4.5",            label: "Haiku 4.5" },
+    { id: "claude-haiku-4-5-20251001",   label: "Haiku 4.5 (Oct 2025)" },
+    { id: "claude-sonnet-4.5",           label: "Sonnet 4.5" },
+    { id: "claude-opus-4.6",             label: "Opus 4.6" },
+    { id: "claude-opus-4-6",             label: "Opus 4.6 (alt)" },
+    { id: "claude-opus-4.7",             label: "Opus 4.7" }
+  ]},
+  { group: "DeepSeek", icon: Code2, color: "#06b6d4", models: [
+    { id: "deepseek-3.2",             label: "V3.2" },
+    { id: "deepseek-v4-flash",        label: "V4 Flash" },
+    { id: "deepseek-v4-pro",          label: "V4 Pro" },
+    { id: "deepseek/deepseek-chat",   label: "DeepSeek Chat" },
+    { id: "deepseek/deepseek-reasoner",label: "DeepSeek Reasoner" }
+  ]},
+  { group: "Gemini",   icon: Sparkles, color: "#8b5cf6", models: [
+    { id: "gemini-2.0-flash-lite",        label: "2.0 Flash Lite" },
+    { id: "gemini-3-flash-preview",       label: "3 Flash Preview" },
+    { id: "gemini-3-pro-preview",         label: "3 Pro Preview" },
+    { id: "gemini-3.1-flash-lite-preview",label: "3.1 Flash Lite" },
+    { id: "gemini-3.1-pro-preview",       label: "3.1 Pro Preview" },
+    { id: "google/gemini-2.5-flash",      label: "2.5 Flash" },
+    { id: "google/gemini-2.5-pro",        label: "2.5 Pro" }
+  ]},
+  { group: "Other",    icon: Bot, color: "#a1a1aa", models: [
+    { id: "MiniMax-M2.5",    label: "MiniMax M2.5" },
+    { id: "glm-5",           label: "GLM-5" },
+    { id: "glm-5.1",         label: "GLM-5.1" },
+    { id: "openai/o3",       label: "OpenAI o3" },
+    { id: "qwen3-coder-next",label: "Qwen 3 Coder" },
+    { id: "gemma-4-31b-it",  label: "Gemma 4 31B" }
+  ]}
 ];
 
 function apiUrl(path) {
@@ -139,6 +146,18 @@ function normalizeAiMarkdown(content = "") {
   return text;
 }
 
+function copyFallback(text) {
+  try {
+    const ta = document.createElement("textarea");
+    ta.value = text || "";
+    ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand("copy");
+    document.body.removeChild(ta);
+  } catch {}
+}
+
 function CodeBlock({ inline, className, children, ...props }) {
   const codeText = String(children || "").replace(/\n$/, "");
   const match = /language-(\w+)/.exec(className || "");
@@ -151,12 +170,14 @@ function CodeBlock({ inline, className, children, ...props }) {
     );
   }
 
-  async function copyCode() {
+  function copyCode() {
     try {
-      await navigator.clipboard.writeText(codeText);
-    } catch {
-      // ignore clipboard failure
-    }
+      if (navigator.clipboard?.writeText) {
+        navigator.clipboard.writeText(codeText).catch(() => copyFallback(codeText));
+      } else {
+        copyFallback(codeText);
+      }
+    } catch {}
   }
 
   return (
@@ -218,6 +239,8 @@ export default function App() {
   const [passwordForm, setPasswordForm] = useState({ currentPassword: "", newPassword: "" });
   const [settingsMessage, setSettingsMessage] = useState("");
   const [copiedId, setCopiedId] = useState("");
+  const [modelSwitchOpen, setModelSwitchOpen] = useState(false);
+  const modelSwitchRef = useRef(null);
   const [adminStats, setAdminStats] = useState(null);
   const [adminUsers, setAdminUsers] = useState([]);
 
@@ -229,7 +252,13 @@ export default function App() {
   const emailVerified = Boolean(user?.emailVerifiedAt || isAdmin);
 
   const activeModel = useMemo(() => {
-    return MODEL_LIST.find((item) => item.key === model) || MODEL_LIST[1];
+    const preset = MODEL_PRESETS.find((item) => item.key === model);
+    if (preset) return preset;
+    for (const g of ALL_MODELS) {
+      const m = g.models.find(x => x.id === model);
+      if (m) return { key: m.id, label: g.group, desc: m.label, icon: g.icon, vision: true, free: true };
+    }
+    return MODEL_PRESETS[1];
   }, [model]);
 
   const visibleConversations = useMemo(() => {
@@ -291,6 +320,17 @@ export default function App() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, sending]);
 
+  useEffect(() => {
+    if (!modelSwitchOpen) return;
+    function handleClick(e) {
+      if (modelSwitchRef.current && !modelSwitchRef.current.contains(e.target)) {
+        setModelSwitchOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [modelSwitchOpen]);
+
   async function bootstrap(activeToken = token) {
     if (!activeToken) {
       setScreen("auth");
@@ -332,23 +372,29 @@ export default function App() {
   }
 
   async function loadConversation(conversationId) {
-    const res = await fetch(`${API_URL}/api/conversations/${conversationId}/messages`, {
-      headers: {
-        Authorization: `Bearer ${token}`
+    try {
+      const res = await fetch(`${API_URL}/api/conversations/${conversationId}/messages`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (!res.ok) {
+        const text = await res.text();
+        let msg = "Gagal membuka chat.";
+        try { msg = JSON.parse(text).error || msg; } catch { msg = text || msg; }
+        alert(msg);
+        return;
       }
-    });
 
-    const data = await res.json();
-
-    if (!res.ok) {
-      alert(data.error || "Gagal membuka chat.");
-      return;
+      const data = await res.json();
+      setActiveConversation(data.conversation);
+      setMessages(data.messages || []);
+      setModel(data.conversation.model || localStorage.getItem("um_default_model") || "balanced");
+      setSidebarOpen(window.innerWidth > 860);
+    } catch {
+      alert("Gagal terhubung ke server.");
     }
-
-    setActiveConversation(data.conversation);
-    setMessages(data.messages || []);
-    setModel(data.conversation.model || localStorage.getItem("um_default_model") || "balanced");
-    setSidebarOpen(window.innerWidth > 860);
   }
 
   async function deleteConversation(e, conversationId) {
@@ -662,13 +708,22 @@ export default function App() {
   }
 
 
-  async function copyText(id, text) {
+  function copyText(id, text) {
     try {
-      await navigator.clipboard.writeText(text || "");
+      if (navigator.clipboard?.writeText) {
+        navigator.clipboard.writeText(text || "").then(() => {
+          setCopiedId(id);
+          setTimeout(() => setCopiedId(""), 1200);
+        }).catch(() => { copyFallback(text); setCopiedId(id); setTimeout(() => setCopiedId(""), 1200); });
+      } else {
+        copyFallback(text);
+        setCopiedId(id);
+        setTimeout(() => setCopiedId(""), 1200);
+      }
+    } catch {
+      copyFallback(text);
       setCopiedId(id);
       setTimeout(() => setCopiedId(""), 1200);
-    } catch {
-      alert("Gagal copy.");
     }
   }
 
@@ -756,7 +811,7 @@ export default function App() {
         return;
       }
 
-      setMessages((prev) => [...prev, data.assistantMessage]);
+      setMessages((prev) => [...prev.slice(0, -1), data.assistantMessage]);
       setUsage(data.usage || usage);
       await loadConversations();
     } catch {
@@ -858,7 +913,13 @@ export default function App() {
   }
 
   function chooseModel(nextModel) {
-    const selected = MODEL_LIST.find((item) => item.key === nextModel);
+    let selected = MODEL_PRESETS.find((item) => item.key === nextModel);
+    if (!selected) {
+      for (const g of ALL_MODELS) {
+        const m = g.models.find(x => x.id === nextModel);
+        if (m) { selected = { ...m, free: true, vision: true }; break; }
+      }
+    }
 
     if (!selected) return;
 
@@ -880,12 +941,6 @@ export default function App() {
     const file = event.target.files?.[0];
 
     if (!file) return;
-
-    if (file.type.startsWith("image/")) {
-      alert("Upload gambar sementara dinonaktifkan. Pakai dokumen atau file kode dulu.");
-      event.target.value = "";
-      return;
-    }
 
     if (file.size > 6 * 1024 * 1024) {
       alert("Ukuran file maksimal 6 MB.");
@@ -1008,7 +1063,7 @@ export default function App() {
     return (
       <main className="boot-page">
         <div className="loader-dot" />
-        <p>Loading UrbanMotion AI...</p>
+        <p>Loading Stb_Chatbot...</p>
       </main>
     );
   }
@@ -1022,7 +1077,7 @@ export default function App() {
           </div>
 
           <h1>Reset Password</h1>
-          <p>Masukkan password baru untuk akun UrbanMotion AI kamu.</p>
+          <p>Masukkan password baru untuk akun Stb_Chatbot kamu.</p>
 
           <form onSubmit={handleResetPassword}>
             <input
@@ -1051,7 +1106,7 @@ export default function App() {
             <Bot size={28} />
           </div>
 
-          <h1>UrbanMotion AI</h1>
+          <h1>Stb_Chatbot</h1>
           <p>Chatbot publik multi-model dengan akun, OAuth, email verification, dan history chat.</p>
 
           {authMessage && <div className="auth-message">{authMessage}</div>}
@@ -1166,7 +1221,7 @@ export default function App() {
               )}
             </div>
             <div>
-              <strong>UrbanMotion AI</strong>
+              <strong>Stb_Chatbot</strong>
               <span>{isAdmin ? "Admin account" : "Free account"}</span>
             </div>
           </div>
@@ -1286,6 +1341,11 @@ export default function App() {
           Settings
         </button>
 
+        <button className="settings-button" onClick={() => window.open("https://x5lab.dev/monitoring", "_blank")}>
+          <Activity size={17} />
+          Monitoring
+        </button>
+
         <button className="logout-button" onClick={logout}>
           <LogOut size={17} />
           Logout
@@ -1298,26 +1358,91 @@ export default function App() {
             <Menu size={20} />
           </button>
 
-          <div className="model-tabs">
-            {MODEL_LIST.map((item) => {
-              const Icon = item.icon;
-              const locked = !isAdmin && !item.free;
+          <div className="model-switch" ref={modelSwitchRef}>
+            <button
+              className="model-switch-btn"
+              onClick={() => setModelSwitchOpen(!modelSwitchOpen)}
+              title={activeModel.desc}
+            >
+              {(() => { const Icon = activeModel.icon; return <Icon size={16} />; })()}
+              <span>{activeModel.label}</span>
+              {MODEL_PRESETS.find(p => p.key === model) ? null : (
+                <small className="model-preview">{activeModel.desc}</small>
+              )}
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`chevron ${modelSwitchOpen ? "open" : ""}`}>
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
 
-              return (
-                <button
-                  key={item.key}
-                  className={`${model === item.key ? "active" : ""} ${
-                    locked ? "locked" : ""
-                  }`}
-                  onClick={() => chooseModel(item.key)}
-                  title={item.desc}
-                >
-                  <Icon size={16} />
-                  <span>{item.label}</span>
-                  
-                </button>
-              );
-            })}
+            {modelSwitchOpen && (
+              <div className="model-switch-dropdown">
+                <div className="model-group-label">Presets</div>
+                {MODEL_PRESETS.map((item) => {
+                  const Icon = item.icon;
+                  const locked = !isAdmin && !item.free;
+
+                  return (
+                    <button
+                      key={item.key}
+                      className={`model-option ${model === item.key ? "active" : ""} ${locked ? "locked" : ""}`}
+                      onClick={() => {
+                        if (!locked) {
+                          chooseModel(item.key);
+                          setModelSwitchOpen(false);
+                        }
+                      }}
+                    >
+                      <Icon size={16} />
+                      <div>
+                        <strong>{item.label}</strong>
+                        <span>{item.desc}</span>
+                      </div>
+                      {model === item.key && (
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                          <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                      )}
+                      {locked && <small>Locked</small>}
+                    </button>
+                  );
+                })}
+
+                <div className="model-divider" />
+
+                {ALL_MODELS.map((group) => (
+                  <div key={group.group}>
+                    <div className="model-group-label" style={{ color: group.color }}>
+                      {group.group}
+                    </div>
+                    {group.models.map((m) => {
+                      const ItemIcon = group.icon;
+                      const isActive = model === m.id;
+                      return (
+                        <button
+                          key={m.id}
+                          className={`model-option ${isActive ? "active" : ""}`}
+                          onClick={() => {
+                            chooseModel(m.id);
+                            setModelSwitchOpen(false);
+                          }}
+                        >
+                          <ItemIcon size={16} />
+                          <div>
+                            <strong>{m.label}</strong>
+                            <span>{group.group}</span>
+                          </div>
+                          {isActive && (
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                              <polyline points="20 6 9 17 4 12" />
+                            </svg>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </header>
 
@@ -1330,7 +1455,7 @@ export default function App() {
               <h1>Apa yang bisa dibantu?</h1>
               <p>
                 Tanya apa saja, upload dokumen/file kode, atau paste GitHub repo.
-                UrbanMotion AI bakal bantu baca context dan lanjut coding.
+                Stb_Chatbot bakal bantu baca context dan lanjut coding.
               </p>
 
               <div className="suggestions">
@@ -1488,7 +1613,7 @@ export default function App() {
                   ? "Tanya sesuatu tentang dokumen/file kode ini..."
                   : repoUrl.trim()
                     ? "Tanya sesuatu tentang repo ini..."
-                    : "Kirim pesan ke UrbanMotion AI"
+                    : "Kirim pesan ke Stb_Chatbot"
               }
               rows={1}
             />
@@ -1502,7 +1627,7 @@ export default function App() {
             </button>
           </div>
 
-          <p>UrbanMotion AI bisa saja salah. Cek ulang jawaban penting.</p>
+          <p>Stb_Chatbot bisa saja salah. Cek ulang jawaban penting.</p>
         </footer>
       </section>
 
@@ -1664,7 +1789,7 @@ export default function App() {
                 {settingsTab === "connections" && (
                   <div className="settings-section">
                     <h3>Connected accounts</h3>
-                    <p className="muted-copy">Akun provider yang sudah tersambung dengan UrbanMotion AI.</p>
+                    <p className="muted-copy">Akun provider yang sudah tersambung dengan Stb_Chatbot.</p>
 
                     <div className="connection-list">
                       {(accountData?.accounts || []).length === 0 ? (
@@ -1724,10 +1849,21 @@ export default function App() {
                           value={model}
                           onChange={(event) => chooseModel(event.target.value)}
                         >
-                          {MODEL_LIST.map((item) => (
-                            <option key={item.key} value={item.key} disabled={!isAdmin && !item.free}>
-                              {item.label}
-                            </option>
+                          <optgroup label="─ Presets ─">
+                            {MODEL_PRESETS.map((item) => (
+                              <option key={item.key} value={item.key} disabled={!isAdmin && !item.free}>
+                                {item.label} — {item.desc}
+                              </option>
+                            ))}
+                          </optgroup>
+                          {ALL_MODELS.map((group) => (
+                            <optgroup key={group.group} label={`─ ${group.group} ─`}>
+                              {group.models.map((m) => (
+                                <option key={m.id} value={m.id}>
+                                  {m.label}
+                                </option>
+                              ))}
+                            </optgroup>
                           ))}
                         </select>
                       </label>
@@ -1743,6 +1879,17 @@ export default function App() {
                   <div className="settings-section">
                     <h3>Admin dashboard</h3>
                     <p className="muted-copy">Pantau user, token, suspend akun, ubah role, dan atur limit harian.</p>
+
+                    <div className="status-card" style={{ marginBottom: 16 }}>
+                      <div>
+                        <strong>AI Monitoring</strong>
+                        <span>Pantau usage API key, balance, dan token di dashboard x5lab.</span>
+                      </div>
+                      <button type="button" onClick={() => window.open("https://x5lab.dev/monitoring", "_blank")}>
+                        <Activity size={15} />
+                        Buka Monitoring
+                      </button>
+                    </div>
 
                     <div className="big-usage">
                       <div>
