@@ -523,15 +523,24 @@ async function upsertOAuthUser({ provider, providerAccountId, email, emailVerifi
     return updatedUser;
   }
 
-  let user = await prisma.user.findUnique({
+  let user = await prisma.user.findFirst({
     where: { email: normalizedEmail }
   });
 
   if (!user) {
     const admin = isAdminEmail(normalizedEmail);
+    const baseUsername = (name || normalizedEmail.split("@")[0])
+      .toLowerCase().replace(/[^a-z0-9]/g, "_").slice(0, 20);
+    let username = baseUsername;
+    let attempt = 0;
+    while (await prisma.user.findUnique({ where: { username } })) {
+      attempt++;
+      username = `${baseUsername}${attempt}`;
+    }
     user = await prisma.user.create({
       data: {
         name: name || normalizedEmail.split("@")[0],
+        username,
         email: normalizedEmail,
         passwordHash: null,
         avatarUrl: avatarUrl || null,
@@ -1186,7 +1195,7 @@ app.post("/api/auth/register", async (req, res) => {
     }
 
     if (email) {
-      const existingEmail = await prisma.user.findUnique({ where: { email } });
+      const existingEmail = await prisma.user.findFirst({ where: { email } });
       if (existingEmail) {
         return res.status(409).json({ error: "Email sudah terdaftar." });
       }
