@@ -453,8 +453,13 @@ async function sendResetPasswordEmail(user) {
   });
 }
 
+function appUrl(path) {
+  const base = APP_URL.replace(/\/?$/, "/");
+  return new URL(path.replace(/^\//, ""), base).toString();
+}
+
 function redirectAuthError(res, message) {
-  const url = new URL("/auth/callback", APP_URL);
+  const url = new URL(appUrl("auth/callback"));
   url.searchParams.set("error", message || "OAuth gagal.");
   return res.redirect(url.toString());
 }
@@ -1357,7 +1362,7 @@ app.get("/api/auth/google/callback", async (req, res) => {
     });
 
     const appToken = createToken(user);
-    const url = new URL("/auth/callback", APP_URL);
+    const url = new URL(appUrl("auth/callback"));
     url.searchParams.set("token", appToken);
     res.redirect(url.toString());
   } catch (error) {
@@ -1455,12 +1460,10 @@ app.get("/api/auth/github/callback", async (req, res) => {
     });
 
     const appToken = createToken(user);
-    const url = new URL("/auth/callback", APP_URL);
+    const url = new URL(appUrl("auth/callback"));
     url.searchParams.set("token", appToken);
     res.redirect(url.toString());
-  } catch (error) {
-    return redirectAuthError(res, error.message);
-  }
+  });
 });
 
 app.post("/api/auth/verify-email/send", auth, async (req, res) => {
@@ -1487,7 +1490,7 @@ app.get("/api/auth/verify-email", async (req, res) => {
     const rawToken = String(req.query.token || "");
 
     if (!rawToken) {
-      const url = new URL("/auth/verified", APP_URL);
+      const url = new URL(appUrl("auth/verified"));
       url.searchParams.set("status", "error");
       url.searchParams.set("message", "Token kosong.");
       return res.redirect(url.toString());
@@ -1503,7 +1506,7 @@ app.get("/api/auth/verify-email", async (req, res) => {
     });
 
     if (!record || record.type !== "EMAIL_VERIFY" || record.usedAt || record.expiresAt < new Date()) {
-      const url = new URL("/auth/verified", APP_URL);
+      const url = new URL(appUrl("auth/verified"));
       url.searchParams.set("status", "error");
       url.searchParams.set("message", "Token verifikasi tidak valid atau sudah expired.");
       return res.redirect(url.toString());
@@ -1520,11 +1523,11 @@ app.get("/api/auth/verify-email", async (req, res) => {
       })
     ]);
 
-    const url = new URL("/auth/verified", APP_URL);
+    const url = new URL(appUrl("auth/verified"));
     url.searchParams.set("status", "success");
     return res.redirect(url.toString());
   } catch (error) {
-    const url = new URL("/auth/verified", APP_URL);
+    const url = new URL(appUrl("auth/verified"));
     url.searchParams.set("status", "error");
     url.searchParams.set("message", error.message);
     return res.redirect(url.toString());
