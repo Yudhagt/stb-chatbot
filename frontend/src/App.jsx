@@ -50,34 +50,34 @@ const ALL_MODELS = [
   { group: "Claude",   icon: Brain, color: "#d97706", models: [
     { id: "claude-haiku-4.5",            label: "Haiku 4.5", vision: false },
     { id: "claude-haiku-4-5-20251001",   label: "Haiku 4.5 (Oct 2025)", vision: false },
-    { id: "claude-sonnet-4.5",           label: "Sonnet 4.5", vision: true },
-    { id: "claude-opus-4.6",             label: "Opus 4.6", vision: true },
-    { id: "claude-opus-4-6",             label: "Opus 4.6 (alt)", vision: true },
-    { id: "claude-opus-4.7",             label: "Opus 4.7", vision: true }
+    { id: "claude-sonnet-4.5",           label: "Sonnet 4.5", vision: false },
+    { id: "claude-opus-4.6",             label: "Opus 4.6", vision: false },
+    { id: "claude-opus-4-6",             label: "Opus 4.6 (alt)", vision: false },
+    { id: "claude-opus-4.7",             label: "Opus 4.7", vision: false }
   ]},
   { group: "DeepSeek", icon: Code2, color: "#06b6d4", models: [
     { id: "deepseek-3.2",             label: "V3.2", vision: true },
     { id: "deepseek-v4-flash",        label: "V4 Flash", vision: false },
-    { id: "deepseek-v4-pro",          label: "V4 Pro", vision: true },
+    { id: "deepseek-v4-pro",          label: "V4 Pro", vision: false },
     { id: "deepseek/deepseek-chat",   label: "DeepSeek Chat", vision: false },
     { id: "deepseek/deepseek-reasoner",label: "DeepSeek Reasoner", vision: false }
   ]},
   { group: "Gemini",   icon: Sparkles, color: "#8b5cf6", models: [
     { id: "gemini-2.0-flash-lite",        label: "2.0 Flash Lite", vision: false },
-    { id: "gemini-3-flash-preview",       label: "3 Flash Preview", vision: true },
-    { id: "gemini-3-pro-preview",         label: "3 Pro Preview", vision: true },
-    { id: "gemini-3.1-flash-lite-preview",label: "3.1 Flash Lite", vision: true },
-    { id: "gemini-3.1-pro-preview",       label: "3.1 Pro Preview", vision: true },
-    { id: "google/gemini-2.5-flash",      label: "2.5 Flash", vision: true },
-    { id: "google/gemini-2.5-pro",        label: "2.5 Pro", vision: true }
+    { id: "gemini-3-flash-preview",       label: "3 Flash Preview", vision: false },
+    { id: "gemini-3-pro-preview",         label: "3 Pro Preview", vision: false },
+    { id: "gemini-3.1-flash-lite-preview",label: "3.1 Flash Lite", vision: false },
+    { id: "gemini-3.1-pro-preview",       label: "3.1 Pro Preview", vision: false },
+    { id: "google/gemini-2.5-flash",      label: "2.5 Flash", vision: false },
+    { id: "google/gemini-2.5-pro",        label: "2.5 Pro", vision: false }
   ]},
   { group: "Other",    icon: Bot, color: "#a1a1aa", models: [
     { id: "MiniMax-M2.5",    label: "MiniMax M2.5", vision: false },
-    { id: "glm-5",           label: "GLM-5", vision: true },
-    { id: "glm-5.1",         label: "GLM-5.1", vision: true },
+    { id: "glm-5",           label: "GLM-5", vision: false },
+    { id: "glm-5.1",         label: "GLM-5.1", vision: false },
     { id: "openai/o3",       label: "OpenAI o3", vision: false },
-    { id: "qwen3-coder-next",label: "Qwen 3 Coder", vision: true },
-    { id: "gemma-4-31b-it",  label: "Gemma 4 31B", vision: true }
+    { id: "qwen3-coder-next",label: "Qwen 3 Coder", vision: false },
+    { id: "gemma-4-31b-it",  label: "Gemma 4 31B", vision: false }
   ]}
 ];
 
