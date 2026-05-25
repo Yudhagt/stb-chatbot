@@ -3,12 +3,13 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
+  "homepage": "https://yudhagt.github.io/stb-chatbot",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "build": "vite build",
     "preview": "vite preview",
     "deploy": "gh-pages -d dist",
-    "deploy:prod": "set VITE_API_URL=https://railway-url && vite build && gh-pages -d dist"
+    "deploy:prod": "set VITE_API_URL=https://backend-production-eb62e.up.railway.app && vite build && gh-pages -d dist"
   },
   "dependencies": {
     "highlight.js": "^11.11.1",

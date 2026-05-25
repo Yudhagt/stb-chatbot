@@ -270,14 +270,15 @@ export default function App() {
   }, [conversations, search]);
 
   useEffect(() => {
-    const url = new URL(window.location.href);
-    const path = url.pathname;
+    const hash = window.location.hash;
+    const searchParams = new URLSearchParams(window.location.search);
+    const basePath = import.meta.env.BASE_URL || "/";
 
-    if (path.endsWith("/auth/callback")) {
-      const oauthToken = url.searchParams.get("token");
-      const error = url.searchParams.get("error");
+    if (hash.startsWith("#/auth/callback")) {
+      const oauthToken = searchParams.get("token");
+      const error = searchParams.get("error");
 
-      window.history.replaceState({}, "", "/");
+      window.history.replaceState({}, "", basePath);
 
       if (oauthToken) {
         localStorage.setItem("um_token", oauthToken);
@@ -291,11 +292,11 @@ export default function App() {
       return;
     }
 
-    if (path.endsWith("/auth/verified")) {
-      const status = url.searchParams.get("status");
-      const message = url.searchParams.get("message");
+    if (hash.startsWith("#/auth/verified")) {
+      const status = searchParams.get("status");
+      const message = searchParams.get("message");
 
-      window.history.replaceState({}, "", "/");
+      window.history.replaceState({}, "", basePath);
       setAuthMessage(
         status === "success"
           ? "Email berhasil diverifikasi. Silakan login atau lanjutkan sesi."
@@ -305,9 +306,9 @@ export default function App() {
       return;
     }
 
-    if (path.endsWith("/reset-password")) {
-      const tokenParam = url.searchParams.get("token") || "";
-      window.history.replaceState({}, "", "/");
+    if (hash.startsWith("#/reset-password")) {
+      const tokenParam = searchParams.get("token") || "";
+      window.history.replaceState({}, "", basePath);
       setResetToken(tokenParam);
       setScreen("reset");
       return;
