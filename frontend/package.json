@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "gh-pages -d dist",
+    "deploy:prod": "set VITE_API_URL=https://railway-url && vite build && gh-pages -d dist"
   },
   "dependencies": {
     "highlight.js": "^11.11.1",
@@ -20,6 +22,7 @@
   "devDependencies": {
     "@vitejs/plugin-react": "^4.3.4",
     "autoprefixer": "^10.5.0",
+    "gh-pages": "^6.3.0",
     "postcss": "^8.5.15",
     "tailwindcss": "^3.4.19",
     "vite": "^5.4.11"

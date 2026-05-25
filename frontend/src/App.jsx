@@ -273,7 +273,7 @@ export default function App() {
     const url = new URL(window.location.href);
     const path = url.pathname;
 
-    if (path === "/auth/callback") {
+    if (path.endsWith("/auth/callback")) {
       const oauthToken = url.searchParams.get("token");
       const error = url.searchParams.get("error");
 
@@ -291,7 +291,7 @@ export default function App() {
       return;
     }
 
-    if (path === "/auth/verified") {
+    if (path.endsWith("/auth/verified")) {
       const status = url.searchParams.get("status");
       const message = url.searchParams.get("message");
 
@@ -305,7 +305,7 @@ export default function App() {
       return;
     }
 
-    if (path === "/reset-password") {
+    if (path.endsWith("/reset-password")) {
       const tokenParam = url.searchParams.get("token") || "";
       window.history.replaceState({}, "", "/");
       setResetToken(tokenParam);

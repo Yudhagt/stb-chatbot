@@ -3,6 +3,8 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
+    "start": "cd backend && node server.js",
+    "postinstall": "cd backend && npm install",
     "dev": "concurrently -n api,web -c red,cyan \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
     "dev:api": "npm run dev --prefix backend",
     "dev:web": "npm run dev --prefix frontend",
