@@ -158,30 +158,30 @@ function avatarUploadSingle(req, res, next) {
 
 
 const FULL_MODEL_LIST = [
-  { id: "claude-haiku-4.5", provider: "Claude", label: "Haiku 4.5" },
-  { id: "claude-haiku-4-5-20251001", provider: "Claude", label: "Haiku 4.5 (Oct 2025)" },
-  { id: "claude-sonnet-4.5", provider: "Claude", label: "Sonnet 4.5" },
-  { id: "claude-opus-4.6", provider: "Claude", label: "Opus 4.6" },
-  { id: "claude-opus-4-6", provider: "Claude", label: "Opus 4.6 (alt)" },
-  { id: "claude-opus-4.7", provider: "Claude", label: "Opus 4.7" },
-  { id: "deepseek-3.2", provider: "DeepSeek", label: "V3.2" },
-  { id: "deepseek-v4-flash", provider: "DeepSeek", label: "V4 Flash" },
-  { id: "deepseek-v4-pro", provider: "DeepSeek", label: "V4 Pro" },
-  { id: "deepseek/deepseek-chat", provider: "DeepSeek", label: "DeepSeek Chat" },
-  { id: "deepseek/deepseek-reasoner", provider: "DeepSeek", label: "DeepSeek Reasoner" },
-  { id: "gemini-2.0-flash-lite", provider: "Gemini", label: "2.0 Flash Lite" },
-  { id: "gemini-3-flash-preview", provider: "Gemini", label: "3 Flash Preview" },
-  { id: "gemini-3-pro-preview", provider: "Gemini", label: "3 Pro Preview" },
-  { id: "gemini-3.1-flash-lite-preview", provider: "Gemini", label: "3.1 Flash Lite" },
-  { id: "gemini-3.1-pro-preview", provider: "Gemini", label: "3.1 Pro Preview" },
-  { id: "google/gemini-2.5-flash", provider: "Gemini", label: "2.5 Flash" },
-  { id: "google/gemini-2.5-pro", provider: "Gemini", label: "2.5 Pro" },
-  { id: "MiniMax-M2.5", provider: "Other", label: "MiniMax M2.5" },
-  { id: "glm-5", provider: "Other", label: "GLM-5" },
-  { id: "glm-5.1", provider: "Other", label: "GLM-5.1" },
-  { id: "openai/o3", provider: "Other", label: "OpenAI o3" },
-  { id: "qwen3-coder-next", provider: "Other", label: "Qwen 3 Coder" },
-  { id: "gemma-4-31b-it", provider: "Other", label: "Gemma 4 31B" }
+  { id: "claude-haiku-4.5", provider: "Claude", label: "Haiku 4.5", vision: false },
+  { id: "claude-haiku-4-5-20251001", provider: "Claude", label: "Haiku 4.5 (Oct 2025)", vision: false },
+  { id: "claude-sonnet-4.5", provider: "Claude", label: "Sonnet 4.5", vision: true },
+  { id: "claude-opus-4.6", provider: "Claude", label: "Opus 4.6", vision: true },
+  { id: "claude-opus-4-6", provider: "Claude", label: "Opus 4.6 (alt)", vision: true },
+  { id: "claude-opus-4.7", provider: "Claude", label: "Opus 4.7", vision: true },
+  { id: "deepseek-3.2", provider: "DeepSeek", label: "V3.2", vision: true },
+  { id: "deepseek-v4-flash", provider: "DeepSeek", label: "V4 Flash", vision: false },
+  { id: "deepseek-v4-pro", provider: "DeepSeek", label: "V4 Pro", vision: true },
+  { id: "deepseek/deepseek-chat", provider: "DeepSeek", label: "DeepSeek Chat", vision: false },
+  { id: "deepseek/deepseek-reasoner", provider: "DeepSeek", label: "DeepSeek Reasoner", vision: false },
+  { id: "gemini-2.0-flash-lite", provider: "Gemini", label: "2.0 Flash Lite", vision: false },
+  { id: "gemini-3-flash-preview", provider: "Gemini", label: "3 Flash Preview", vision: true },
+  { id: "gemini-3-pro-preview", provider: "Gemini", label: "3 Pro Preview", vision: true },
+  { id: "gemini-3.1-flash-lite-preview", provider: "Gemini", label: "3.1 Flash Lite", vision: true },
+  { id: "gemini-3.1-pro-preview", provider: "Gemini", label: "3.1 Pro Preview", vision: true },
+  { id: "google/gemini-2.5-flash", provider: "Gemini", label: "2.5 Flash", vision: true },
+  { id: "google/gemini-2.5-pro", provider: "Gemini", label: "2.5 Pro", vision: true },
+  { id: "MiniMax-M2.5", provider: "Other", label: "MiniMax M2.5", vision: false },
+  { id: "glm-5", provider: "Other", label: "GLM-5", vision: true },
+  { id: "glm-5.1", provider: "Other", label: "GLM-5.1", vision: true },
+  { id: "openai/o3", provider: "Other", label: "OpenAI o3", vision: false },
+  { id: "qwen3-coder-next", provider: "Other", label: "Qwen 3 Coder", vision: true },
+  { id: "gemma-4-31b-it", provider: "Other", label: "Gemma 4 31B", vision: true }
 ];
 
 function getModelConfig(key) {
@@ -191,7 +191,7 @@ function getModelConfig(key) {
     id: key,
     label: found?.label || key,
     description: found ? `${found.provider} ${found.label}` : key,
-    vision: true,
+    vision: found ? found.vision : false,
     allowedForFree: true
   };
 }
@@ -1149,7 +1149,7 @@ app.get("/api/models", (req, res) => {
     key: m.id,
     label: `${m.provider} ${m.label}`,
     description: m.provider,
-    vision: true,
+    vision: m.vision || false,
     allowedForFree: true,
     modelId: m.id,
     provider: m.provider

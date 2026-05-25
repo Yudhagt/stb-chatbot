@@ -48,36 +48,36 @@ const MODEL_PRESETS = [
 
 const ALL_MODELS = [
   { group: "Claude",   icon: Brain, color: "#d97706", models: [
-    { id: "claude-haiku-4.5",            label: "Haiku 4.5" },
-    { id: "claude-haiku-4-5-20251001",   label: "Haiku 4.5 (Oct 2025)" },
-    { id: "claude-sonnet-4.5",           label: "Sonnet 4.5" },
-    { id: "claude-opus-4.6",             label: "Opus 4.6" },
-    { id: "claude-opus-4-6",             label: "Opus 4.6 (alt)" },
-    { id: "claude-opus-4.7",             label: "Opus 4.7" }
+    { id: "claude-haiku-4.5",            label: "Haiku 4.5", vision: false },
+    { id: "claude-haiku-4-5-20251001",   label: "Haiku 4.5 (Oct 2025)", vision: false },
+    { id: "claude-sonnet-4.5",           label: "Sonnet 4.5", vision: true },
+    { id: "claude-opus-4.6",             label: "Opus 4.6", vision: true },
+    { id: "claude-opus-4-6",             label: "Opus 4.6 (alt)", vision: true },
+    { id: "claude-opus-4.7",             label: "Opus 4.7", vision: true }
   ]},
   { group: "DeepSeek", icon: Code2, color: "#06b6d4", models: [
-    { id: "deepseek-3.2",             label: "V3.2" },
-    { id: "deepseek-v4-flash",        label: "V4 Flash" },
-    { id: "deepseek-v4-pro",          label: "V4 Pro" },
-    { id: "deepseek/deepseek-chat",   label: "DeepSeek Chat" },
-    { id: "deepseek/deepseek-reasoner",label: "DeepSeek Reasoner" }
+    { id: "deepseek-3.2",             label: "V3.2", vision: true },
+    { id: "deepseek-v4-flash",        label: "V4 Flash", vision: false },
+    { id: "deepseek-v4-pro",          label: "V4 Pro", vision: true },
+    { id: "deepseek/deepseek-chat",   label: "DeepSeek Chat", vision: false },
+    { id: "deepseek/deepseek-reasoner",label: "DeepSeek Reasoner", vision: false }
   ]},
   { group: "Gemini",   icon: Sparkles, color: "#8b5cf6", models: [
-    { id: "gemini-2.0-flash-lite",        label: "2.0 Flash Lite" },
-    { id: "gemini-3-flash-preview",       label: "3 Flash Preview" },
-    { id: "gemini-3-pro-preview",         label: "3 Pro Preview" },
-    { id: "gemini-3.1-flash-lite-preview",label: "3.1 Flash Lite" },
-    { id: "gemini-3.1-pro-preview",       label: "3.1 Pro Preview" },
-    { id: "google/gemini-2.5-flash",      label: "2.5 Flash" },
-    { id: "google/gemini-2.5-pro",        label: "2.5 Pro" }
+    { id: "gemini-2.0-flash-lite",        label: "2.0 Flash Lite", vision: false },
+    { id: "gemini-3-flash-preview",       label: "3 Flash Preview", vision: true },
+    { id: "gemini-3-pro-preview",         label: "3 Pro Preview", vision: true },
+    { id: "gemini-3.1-flash-lite-preview",label: "3.1 Flash Lite", vision: true },
+    { id: "gemini-3.1-pro-preview",       label: "3.1 Pro Preview", vision: true },
+    { id: "google/gemini-2.5-flash",      label: "2.5 Flash", vision: true },
+    { id: "google/gemini-2.5-pro",        label: "2.5 Pro", vision: true }
   ]},
   { group: "Other",    icon: Bot, color: "#a1a1aa", models: [
-    { id: "MiniMax-M2.5",    label: "MiniMax M2.5" },
-    { id: "glm-5",           label: "GLM-5" },
-    { id: "glm-5.1",         label: "GLM-5.1" },
-    { id: "openai/o3",       label: "OpenAI o3" },
-    { id: "qwen3-coder-next",label: "Qwen 3 Coder" },
-    { id: "gemma-4-31b-it",  label: "Gemma 4 31B" }
+    { id: "MiniMax-M2.5",    label: "MiniMax M2.5", vision: false },
+    { id: "glm-5",           label: "GLM-5", vision: true },
+    { id: "glm-5.1",         label: "GLM-5.1", vision: true },
+    { id: "openai/o3",       label: "OpenAI o3", vision: false },
+    { id: "qwen3-coder-next",label: "Qwen 3 Coder", vision: true },
+    { id: "gemma-4-31b-it",  label: "Gemma 4 31B", vision: true }
   ]}
 ];
 
@@ -256,7 +256,7 @@ export default function App() {
     if (preset) return preset;
     for (const g of ALL_MODELS) {
       const m = g.models.find(x => x.id === model);
-      if (m) return { key: m.id, label: g.group, desc: m.label, icon: g.icon, vision: true, free: true };
+      if (m) return { key: m.id, label: g.group, desc: m.label, icon: g.icon, vision: m.vision || false, free: true };
     }
     return MODEL_PRESETS[1];
   }, [model]);
@@ -917,7 +917,7 @@ export default function App() {
     if (!selected) {
       for (const g of ALL_MODELS) {
         const m = g.models.find(x => x.id === nextModel);
-        if (m) { selected = { ...m, free: true, vision: true }; break; }
+        if (m) { selected = { ...m, free: true, vision: m.vision || false }; break; }
       }
     }
 
@@ -929,7 +929,7 @@ export default function App() {
     }
 
     if (imageFile?.type?.startsWith("image/") && !selected.vision) {
-      alert("Model ini text-only. Untuk gambar pakai Fast atau Smart.");
+      alert("Model ini text-only. Untuk gambar pakai Balanced atau Smart.");
       return;
     }
 
@@ -965,6 +965,11 @@ export default function App() {
 
     if (!emailVerified) {
       alert("Verifikasi email dulu sebelum memakai chatbot.");
+      return;
+    }
+
+    if (imageFile && !activeModel.vision) {
+      alert("Model ini text-only. Untuk gambar pakai Balanced atau Smart.");
       return;
     }
 
