@@ -1,0 +1,115 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install & build frontend
+        run: |
+          npm install --prefix frontend
+          npm run build --prefix frontend
+
+      - name: Validate SSH secrets
+        id: check
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_KEY: ${{ secrets.SSH_KEY }}
+        run: |
+          if [ -z "$SSH_HOST" ] || [ -z "$SSH_USER" ] || [ -z "$SSH_KEY" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "SSH secrets not configured — skipping deployment."
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Setup SSH
+        if: steps.check.outputs.skip == 'false'
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_KEY: ${{ secrets.SSH_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H "$SSH_HOST" >> ~/.ssh/known_hosts
+
+      - name: Deploy backend files
+        if: steps.check.outputs.skip == 'false'
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_PORT: ${{ secrets.SSH_PORT || '22' }}
+        run: |
+          rsync -avz --delete \
+            --exclude node_modules \
+            --exclude prisma/dev.db \
+            --exclude .env \
+            --exclude uploads \
+            -e "ssh -p $SSH_PORT" \
+            ./backend/ \
+            "$SSH_USER@$SSH_HOST:/var/www/urbanmotion-ai/backend/"
+
+      - name: Deploy frontend build
+        if: steps.check.outputs.skip == 'false'
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_PORT: ${{ secrets.SSH_PORT || '22' }}
+        run: |
+          rsync -avz --delete \
+            -e "ssh -p $SSH_PORT" \
+            ./frontend/dist/ \
+            "$SSH_USER@$SSH_HOST:/var/www/urbanmotion-ai/frontend/dist/"
+
+      - name: Deploy ecosystem.config.cjs
+        if: steps.check.outputs.skip == 'false'
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_PORT: ${{ secrets.SSH_PORT || '22' }}
+        run: |
+          rsync -avz \
+            -e "ssh -p $SSH_PORT" \
+            ./ecosystem.config.cjs \
+            "$SSH_USER@$SSH_HOST:/var/www/urbanmotion-ai/ecosystem.config.cjs"
+
+      - name: Install backend deps & restart
+        if: steps.check.outputs.skip == 'false'
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_PORT: ${{ secrets.SSH_PORT || '22' }}
+        run: |
+          ssh -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" << 'EOF'
+            set -e
+            cd /var/www/urbanmotion-ai/backend
+            npm install --omit=dev
+            npx prisma generate
+            npx prisma migrate deploy 2>/dev/null || npx prisma db push
+            cd /var/www/urbanmotion-ai
+            pm2 restart ecosystem.config.cjs || pm2 start ecosystem.config.cjs
+            pm2 save
+          EOF
+
+      - name: Cleanup SSH key
+        if: always()
+        run: rm -f ~/.ssh/id_ed25519
