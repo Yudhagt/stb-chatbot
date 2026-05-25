@@ -40,10 +40,10 @@ import "./App.css";
 const API_URL = import.meta.env.VITE_API_URL || "";
 
 const MODEL_PRESETS = [
-  { key: "fast",    label: "Fast",     desc: "DeepSeek V4 Flash cepat",       icon: Zap,     vision: false, free: true },
-  { key: "balanced",label: "Balanced", desc: "DeepSeek 3.2 serba guna",       icon: Sparkles,vision: true,  free: true },
-  { key: "smart",   label: "Smart",    desc: "DeepSeek V4 Pro analisis",      icon: Brain,   vision: true,  free: false },
-  { key: "coding",  label: "Coding",   desc: "DeepSeek Reasoner coding",      icon: Code2,   vision: false, free: false }
+  { key: "fast",    label: "Fast",     desc: "Claude Haiku cepat & ringan",    icon: Zap,     vision: false, free: true },
+  { key: "balanced",label: "Balanced", desc: "DeepSeek 3.2 serba guna",        icon: Sparkles,vision: false, free: true },
+  { key: "smart",   label: "Smart",    desc: "Claude Sonnet analisis kuat",     icon: Brain,   vision: false, free: false },
+  { key: "coding",  label: "Coding",   desc: "Qwen 3 Coder coding & debug",    icon: Code2,   vision: false, free: false }
 ];
 
 const ALL_MODELS = [
@@ -56,7 +56,7 @@ const ALL_MODELS = [
     { id: "claude-opus-4.7",             label: "Opus 4.7", vision: false }
   ]},
   { group: "DeepSeek", icon: Code2, color: "#06b6d4", models: [
-    { id: "deepseek-3.2",             label: "V3.2", vision: true },
+    { id: "deepseek-3.2",             label: "V3.2", vision: false },
     { id: "deepseek-v4-flash",        label: "V4 Flash", vision: false },
     { id: "deepseek-v4-pro",          label: "V4 Pro", vision: false },
     { id: "deepseek/deepseek-chat",   label: "DeepSeek Chat", vision: false },

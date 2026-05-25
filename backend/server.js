@@ -164,7 +164,7 @@ const FULL_MODEL_LIST = [
   { id: "claude-opus-4.6", provider: "Claude", label: "Opus 4.6", vision: false },
   { id: "claude-opus-4-6", provider: "Claude", label: "Opus 4.6 (alt)", vision: false },
   { id: "claude-opus-4.7", provider: "Claude", label: "Opus 4.7", vision: false },
-  { id: "deepseek-3.2", provider: "DeepSeek", label: "V3.2", vision: true },
+  { id: "deepseek-3.2", provider: "DeepSeek", label: "V3.2", vision: false },
   { id: "deepseek-v4-flash", provider: "DeepSeek", label: "V4 Flash", vision: false },
   { id: "deepseek-v4-pro", provider: "DeepSeek", label: "V4 Pro", vision: false },
   { id: "deepseek/deepseek-chat", provider: "DeepSeek", label: "DeepSeek Chat", vision: false },
@@ -208,14 +208,14 @@ const MODEL_CONFIG = {
     id: process.env.MODEL_BALANCED || "deepseek-3.2",
     label: "Balanced",
     description: "DeepSeek 3.2 serba guna",
-    vision: true,
+    vision: false,
     allowedForFree: true
   },
   smart: {
     id: process.env.MODEL_SMART || "claude-sonnet-4.5",
     label: "Smart",
     description: "Claude Sonnet analisis kuat",
-    vision: true,
+    vision: false,
     allowedForFree: false
   },
   coding: {
