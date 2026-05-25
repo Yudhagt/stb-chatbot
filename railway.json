@@ -4,7 +4,7 @@
     "buildCommand": "cd backend && cp prisma/schema.pg.prisma prisma/schema.prisma && npx prisma generate"
   },
   "deploy": {
-    "startCommand": "cd backend && npx prisma db push && node server.js",
+    "startCommand": "cd backend && cp prisma/schema.pg.prisma prisma/schema.prisma && npx prisma db push && node server.js",
     "healthcheckPath": "/",
     "restartPolicyType": "ON_FAILURE"
   }
