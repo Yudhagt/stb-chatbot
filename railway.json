@@ -1,10 +1,10 @@
 {
   "build": {
     "builder": "NIXPACKS",
-    "buildCommand": "cd backend && cp prisma/schema.pg.prisma prisma/schema.prisma && npx prisma generate && npx prisma db push"
+    "buildCommand": "cd backend && cp prisma/schema.pg.prisma prisma/schema.prisma && npx prisma generate"
   },
   "deploy": {
-    "startCommand": "cd backend && node server.js",
+    "startCommand": "cd backend && npx prisma db push && node server.js",
     "healthcheckPath": "/",
     "restartPolicyType": "ON_FAILURE"
   }
