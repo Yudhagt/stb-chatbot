@@ -159,30 +159,37 @@ function avatarUploadSingle(req, res, next) {
 
 
 const FULL_MODEL_LIST = [
-  { id: "claude-haiku-4.5", provider: "Claude", label: "Haiku 4.5", vision: false },
-  { id: "claude-haiku-4-5-20251001", provider: "Claude", label: "Haiku 4.5 (Oct 2025)", vision: false },
-  { id: "claude-sonnet-4.5", provider: "Claude", label: "Sonnet 4.5", vision: false },
-  { id: "claude-opus-4.6", provider: "Claude", label: "Opus 4.6", vision: false },
-  { id: "claude-opus-4-6", provider: "Claude", label: "Opus 4.6 (alt)", vision: false },
-  { id: "claude-opus-4.7", provider: "Claude", label: "Opus 4.7", vision: false },
-  { id: "deepseek-3.2", provider: "DeepSeek", label: "V3.2", vision: false },
-  { id: "deepseek-v4-flash", provider: "DeepSeek", label: "V4 Flash", vision: false },
-  { id: "deepseek-v4-pro", provider: "DeepSeek", label: "V4 Pro", vision: false },
-  { id: "deepseek/deepseek-chat", provider: "DeepSeek", label: "DeepSeek Chat", vision: false },
-  { id: "deepseek/deepseek-reasoner", provider: "DeepSeek", label: "DeepSeek Reasoner", vision: false },
-  { id: "gemini-2.0-flash-lite", provider: "Gemini", label: "2.0 Flash Lite", vision: false },
-  { id: "gemini-3-flash-preview", provider: "Gemini", label: "3 Flash Preview", vision: false },
-  { id: "gemini-3-pro-preview", provider: "Gemini", label: "3 Pro Preview", vision: false },
-  { id: "gemini-3.1-flash-lite-preview", provider: "Gemini", label: "3.1 Flash Lite", vision: false },
-  { id: "gemini-3.1-pro-preview", provider: "Gemini", label: "3.1 Pro Preview", vision: false },
-  { id: "google/gemini-2.5-flash", provider: "Gemini", label: "2.5 Flash", vision: false },
-  { id: "google/gemini-2.5-pro", provider: "Gemini", label: "2.5 Pro", vision: false },
-  { id: "MiniMax-M2.5", provider: "Other", label: "MiniMax M2.5", vision: false },
-  { id: "glm-5", provider: "Other", label: "GLM-5", vision: false },
-  { id: "glm-5.1", provider: "Other", label: "GLM-5.1", vision: false },
-  { id: "openai/o3", provider: "Other", label: "OpenAI o3", vision: false },
-  { id: "qwen3-coder-next", provider: "Other", label: "Qwen 3 Coder", vision: false },
-  { id: "gemma-4-31b-it", provider: "Other", label: "Gemma 4 31B", vision: false }
+  // Anthropic (Claude)
+  { id: "claude-opus-4.6",    provider: "Claude",   label: "Opus 4.6",     vision: false },
+  { id: "claude-sonnet-4.5",  provider: "Claude",   label: "Sonnet 4.5",   vision: false },
+  { id: "claude-sonnet-4",    provider: "Claude",   label: "Sonnet 4",     vision: false },
+  { id: "claude-haiku-4.5",   provider: "Claude",   label: "Haiku 4.5",    vision: false },
+  // OpenAI (GPT)
+  { id: "gpt-5.5",            provider: "OpenAI",   label: "GPT-5.5",         vision: false },
+  { id: "gpt-5.4",            provider: "OpenAI",   label: "GPT-5.4",         vision: false },
+  { id: "gpt-5.3-codex",      provider: "OpenAI",   label: "GPT-5.3 Codex",   vision: false },
+  { id: "gpt-5.2",            provider: "OpenAI",   label: "GPT-5.2",         vision: false },
+  { id: "gpt-5.1",            provider: "OpenAI",   label: "GPT-5.1",         vision: false },
+  { id: "gpt-5.1-codex",      provider: "OpenAI",   label: "GPT-5.1 Codex",   vision: false },
+  { id: "gpt-5.1-codex-max",  provider: "OpenAI",   label: "GPT-5.1 Codex Max", vision: false },
+  { id: "gpt-4o",             provider: "OpenAI",   label: "GPT-4o",          vision: false },
+  // Google (Gemini)
+  { id: "gemini-3.1-pro",         provider: "Gemini", label: "Gemini 3.1 Pro",       vision: false },
+  { id: "gemini-3.1-flash-lite",  provider: "Gemini", label: "Gemini 3.1 Flash Lite",vision: false },
+  { id: "gemini-3.0-pro",         provider: "Gemini", label: "Gemini 3.0 Pro",       vision: false },
+  { id: "gemini-3.0-flash",       provider: "Gemini", label: "Gemini 3.0 Flash",     vision: false },
+  { id: "gemini-2.5-pro",         provider: "Gemini", label: "Gemini 2.5 Pro",       vision: false },
+  { id: "gemini-2.5-flash",       provider: "Gemini", label: "Gemini 2.5 Flash",     vision: false },
+  // DeepSeek
+  { id: "deepseek-v3",        provider: "DeepSeek", label: "DeepSeek V3",   vision: false },
+  // Qwen
+  { id: "qwen3-coder-next",   provider: "Qwen",     label: "Qwen 3 Coder",  vision: false },
+  // Moonshot (Kimi)
+  { id: "kimi-k2.5",          provider: "Moonshot", label: "Kimi K2.5",     vision: false },
+  // MiniMax
+  { id: "minimax-m2.5",       provider: "MiniMax",  label: "MiniMax M2.5",  vision: false },
+  // Zhipu AI (GLM)
+  { id: "glm-5",              provider: "GLM",      label: "GLM-5",         vision: false }
 ];
 
 function getModelConfig(key) {
@@ -206,9 +213,9 @@ const MODEL_CONFIG = {
     allowedForFree: true
   },
   balanced: {
-    id: process.env.MODEL_BALANCED || "deepseek-3.2",
+    id: process.env.MODEL_BALANCED || "deepseek-v3",
     label: "Balanced",
-    description: "DeepSeek 3.2 serba guna",
+    description: "DeepSeek V3 serba guna & hemat",
     vision: false,
     allowedForFree: true
   },
@@ -220,9 +227,9 @@ const MODEL_CONFIG = {
     allowedForFree: false
   },
   coding: {
-    id: process.env.MODEL_CODING || "qwen3-coder-next",
+    id: process.env.MODEL_CODING || "gpt-5.3-codex",
     label: "Coding",
-    description: "Qwen 3 Coder coding & debug",
+    description: "GPT-5.3 Codex coding & debug",
     vision: false,
     allowedForFree: false
   }

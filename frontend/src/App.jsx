@@ -41,43 +41,50 @@ const API_URL = import.meta.env.VITE_API_URL || "";
 
 const MODEL_PRESETS = [
   { key: "fast",    label: "Fast",     desc: "Claude Haiku cepat & ringan",    icon: Zap,     vision: false, free: true },
-  { key: "balanced",label: "Balanced", desc: "DeepSeek 3.2 serba guna",        icon: Sparkles,vision: false, free: true },
-  { key: "smart",   label: "Smart",    desc: "Claude Sonnet analisis kuat",     icon: Brain,   vision: false, free: false },
-  { key: "coding",  label: "Coding",   desc: "Qwen 3 Coder coding & debug",    icon: Code2,   vision: false, free: false }
+  { key: "balanced",label: "Balanced", desc: "DeepSeek V3 serba guna & hemat", icon: Sparkles,vision: false, free: true },
+  { key: "smart",   label: "Smart",    desc: "Claude Sonnet analisis kuat",    icon: Brain,   vision: false, free: false },
+  { key: "coding",  label: "Coding",   desc: "GPT-5.3 Codex coding & debug",   icon: Code2,   vision: false, free: false }
 ];
 
 const ALL_MODELS = [
-  { group: "Claude",   icon: Brain, color: "#d97706", models: [
-    { id: "claude-haiku-4.5",            label: "Haiku 4.5", vision: false },
-    { id: "claude-haiku-4-5-20251001",   label: "Haiku 4.5 (Oct 2025)", vision: false },
-    { id: "claude-sonnet-4.5",           label: "Sonnet 4.5", vision: false },
-    { id: "claude-opus-4.6",             label: "Opus 4.6", vision: false },
-    { id: "claude-opus-4-6",             label: "Opus 4.6 (alt)", vision: false },
-    { id: "claude-opus-4.7",             label: "Opus 4.7", vision: false }
+  { group: "Claude",   icon: Brain,    color: "#d97706", models: [
+    { id: "claude-opus-4.6",    label: "Opus 4.6",   vision: false },
+    { id: "claude-sonnet-4.5",  label: "Sonnet 4.5", vision: false },
+    { id: "claude-sonnet-4",    label: "Sonnet 4",   vision: false },
+    { id: "claude-haiku-4.5",   label: "Haiku 4.5",  vision: false }
   ]},
-  { group: "DeepSeek", icon: Code2, color: "#06b6d4", models: [
-    { id: "deepseek-3.2",             label: "V3.2", vision: false },
-    { id: "deepseek-v4-flash",        label: "V4 Flash", vision: false },
-    { id: "deepseek-v4-pro",          label: "V4 Pro", vision: false },
-    { id: "deepseek/deepseek-chat",   label: "DeepSeek Chat", vision: false },
-    { id: "deepseek/deepseek-reasoner",label: "DeepSeek Reasoner", vision: false }
+  { group: "OpenAI",   icon: Zap,      color: "#10a37f", models: [
+    { id: "gpt-5.5",            label: "GPT-5.5",          vision: false },
+    { id: "gpt-5.4",            label: "GPT-5.4",          vision: false },
+    { id: "gpt-5.3-codex",      label: "GPT-5.3 Codex",   vision: false },
+    { id: "gpt-5.2",            label: "GPT-5.2",          vision: false },
+    { id: "gpt-5.1",            label: "GPT-5.1",          vision: false },
+    { id: "gpt-5.1-codex",      label: "GPT-5.1 Codex",   vision: false },
+    { id: "gpt-5.1-codex-max",  label: "GPT-5.1 Codex Max", vision: false },
+    { id: "gpt-4o",             label: "GPT-4o",           vision: false }
   ]},
   { group: "Gemini",   icon: Sparkles, color: "#8b5cf6", models: [
-    { id: "gemini-2.0-flash-lite",        label: "2.0 Flash Lite", vision: false },
-    { id: "gemini-3-flash-preview",       label: "3 Flash Preview", vision: false },
-    { id: "gemini-3-pro-preview",         label: "3 Pro Preview", vision: false },
-    { id: "gemini-3.1-flash-lite-preview",label: "3.1 Flash Lite", vision: false },
-    { id: "gemini-3.1-pro-preview",       label: "3.1 Pro Preview", vision: false },
-    { id: "google/gemini-2.5-flash",      label: "2.5 Flash", vision: false },
-    { id: "google/gemini-2.5-pro",        label: "2.5 Pro", vision: false }
+    { id: "gemini-3.1-pro",         label: "3.1 Pro",       vision: false },
+    { id: "gemini-3.1-flash-lite",  label: "3.1 Flash Lite",vision: false },
+    { id: "gemini-3.0-pro",         label: "3.0 Pro",       vision: false },
+    { id: "gemini-3.0-flash",       label: "3.0 Flash",     vision: false },
+    { id: "gemini-2.5-pro",         label: "2.5 Pro",       vision: false },
+    { id: "gemini-2.5-flash",       label: "2.5 Flash",     vision: false }
   ]},
-  { group: "Other",    icon: Bot, color: "#a1a1aa", models: [
-    { id: "MiniMax-M2.5",    label: "MiniMax M2.5", vision: false },
-    { id: "glm-5",           label: "GLM-5", vision: false },
-    { id: "glm-5.1",         label: "GLM-5.1", vision: false },
-    { id: "openai/o3",       label: "OpenAI o3", vision: false },
-    { id: "qwen3-coder-next",label: "Qwen 3 Coder", vision: false },
-    { id: "gemma-4-31b-it",  label: "Gemma 4 31B", vision: false }
+  { group: "DeepSeek", icon: Code2,    color: "#06b6d4", models: [
+    { id: "deepseek-v3", label: "DeepSeek V3", vision: false }
+  ]},
+  { group: "Qwen",     icon: Bot,      color: "#f472b6", models: [
+    { id: "qwen3-coder-next", label: "Qwen 3 Coder", vision: false }
+  ]},
+  { group: "Moonshot", icon: Bot,      color: "#a78bfa", models: [
+    { id: "kimi-k2.5", label: "Kimi K2.5", vision: false }
+  ]},
+  { group: "MiniMax",  icon: Bot,      color: "#f59e0b", models: [
+    { id: "minimax-m2.5", label: "MiniMax M2.5", vision: false }
+  ]},
+  { group: "GLM",      icon: Bot,      color: "#34d399", models: [
+    { id: "glm-5", label: "GLM-5", vision: false }
   ]}
 ];
 
