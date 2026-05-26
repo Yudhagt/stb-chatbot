@@ -251,6 +251,12 @@ export default function App() {
   const [adminStats, setAdminStats] = useState(null);
   const [adminUsers, setAdminUsers] = useState([]);
 
+  const [systemPrompt, setSystemPrompt] = useState(localStorage.getItem("um_system_prompt") || "");
+  const [temperature, setTemperature] = useState(Number(localStorage.getItem("um_temperature")) || 0.7);
+  const [maxTokens, setMaxTokens] = useState(Number(localStorage.getItem("um_max_tokens")) || 4096);
+  const [webSearch, setWebSearch] = useState(false);
+  const [searchResults, setSearchResults] = useState(null);
+
   const fileInputRef = useRef(null);
   const avatarInputRef = useRef(null);
   const bottomRef = useRef(null);
