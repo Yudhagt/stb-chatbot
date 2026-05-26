@@ -41,50 +41,51 @@ const API_URL = import.meta.env.VITE_API_URL || "";
 
 const MODEL_PRESETS = [
   { key: "fast",    label: "Fast",     desc: "Claude Haiku 4.5 — paling cepat, cocok untuk chat ringan, ringkasan, dan tugas sederhana dengan respons instan",    icon: Zap,     vision: false, free: true },
-  { key: "balanced",label: "Balanced", desc: "DeepSeek V3 — serba guna dengan performa kuat, hemat token, cocok untuk obrolan harian dan tugas umum", icon: Sparkles,vision: false, free: true },
+  { key: "balanced",label: "Balanced", desc: "DeepSeek V3.2 — serba guna dengan performa kuat, hemat token, cocok untuk obrolan harian dan tugas umum", icon: Sparkles,vision: false, free: true },
   { key: "smart",   label: "Smart",    desc: "Claude Sonnet 4.5 — analisis mendalam, coding kompleks, riset, dan pemecahan masalah tingkat lanjut",    icon: Brain,   vision: false, free: false },
-  { key: "coding",  label: "Coding",   desc: "GPT-5.3 Codex — spesialis coding & debugging, optimal untuk software engineering dan code review",   icon: Code2,   vision: false, free: false }
+  { key: "coding",  label: "Coding",   desc: "DeepSeek V4 Pro — spesialis coding & debugging, optimal untuk software engineering dan code review",   icon: Code2,   vision: false, free: false }
 ];
 
 const ALL_MODELS = [
   { group: "Claude",   icon: Brain,    color: "#d97706", models: [
-    { id: "claude-opus-4.6",    label: "Opus 4.6",   vision: false, desc: "Flagship Claude — terkuat untuk reasoning kompleks, riset mendalam, dan extended thinking. 1M context window." },
-    { id: "claude-sonnet-4.5",  label: "Sonnet 4.5", vision: false, desc: "Keseimbangan sempurna antara kecerdasan dan kecepatan. Ideal untuk coding dan analisis data." },
-    { id: "claude-sonnet-4",    label: "Sonnet 4",   vision: false, desc: "Workhorse harian yang andal. Kualitas bagus, cepat, dan hemat biaya untuk tugas sehari-hari." },
-    { id: "claude-haiku-4.5",   label: "Haiku 4.5",  vision: false, desc: "Paling cepat di keluarga Claude. Optimal untuk high-throughput dan aplikasi latensi rendah." }
+    { id: "claude-opus-4.6",        label: "Opus 4.6",   vision: false, desc: "Flagship Claude — terkuat untuk reasoning kompleks, riset mendalam, dan extended thinking." },
+    { id: "claude-opus-4-6",        label: "Opus 4.6 (alt)", vision: false, desc: "Alternate endpoint Claude Opus 4.6." },
+    { id: "claude-opus-4.7",        label: "Opus 4.7",   vision: false, desc: "Claude Opus 4.7 terbaru — performa ditingkatkan." },
+    { id: "claude-sonnet-4.5",      label: "Sonnet 4.5", vision: false, desc: "Keseimbangan sempurna antara kecerdasan dan kecepatan. Ideal untuk coding dan analisis data." },
+    { id: "claude-haiku-4.5",       label: "Haiku 4.5",  vision: false, desc: "Paling cepat di keluarga Claude. Optimal untuk high-throughput dan aplikasi latensi rendah." },
+    { id: "claude-haiku-4-5-20251001", label: "Haiku 4.5 (alt)", vision: false, desc: "Alternate endpoint Claude Haiku 4.5." }
   ]},
   { group: "OpenAI",   icon: Zap,      color: "#10a37f", models: [
-    { id: "gpt-5.5",            label: "GPT-5.5",          vision: false, desc: "Flagship terbaru OpenAI. Superior di reasoning, coding, dan multimodal. 400K context window." },
-    { id: "gpt-5.4",            label: "GPT-5.4",          vision: false, desc: "Reasoning kuat dengan context window 400K. Cocok untuk analisis dokumen besar." },
-    { id: "gpt-5.3-codex",      label: "GPT-5.3 Codex",   vision: false, desc: "Varian khusus coding. Dioptimalkan untuk software engineering, debugging, dan code review." },
-    { id: "gpt-5.2",            label: "GPT-5.2",          vision: false, desc: "General-purpose kuat dengan instruction following dan tool use yang lebih baik." },
-    { id: "gpt-5.1",            label: "GPT-5.1",          vision: false, desc: "Andal dan hemat biaya. Cocok untuk production workload yang butuh output konsisten." },
-    { id: "gpt-5.1-codex",      label: "GPT-5.1 Codex",   vision: false, desc: "Varian coding GPT-5.1. Cepat dan akurat untuk generate kode sehari-hari." },
-    { id: "gpt-5.1-codex-max",  label: "GPT-5.1 Codex Max", vision: false, desc: "Extended compute untuk task coding kompleks multi-file yang butuh deep reasoning." },
-    { id: "gpt-4o",             label: "GPT-4o",           vision: false, desc: "Multimodal serba cepat. Hemat biaya, banyak dipakai untuk berbagai aplikasi." }
+    { id: "openai/o3",  label: "o3",  vision: false, desc: "Flagship terbaru OpenAI — reasoning superior, coding, dan multimodal." }
   ]},
   { group: "Gemini",   icon: Sparkles, color: "#8b5cf6", models: [
-    { id: "gemini-3.1-pro",         label: "3.1 Pro",       vision: false, desc: "Flagship Gemini terbaru. Reasoning kuat dengan 1M context — ideal untuk codebase besar." },
-    { id: "gemini-3.1-flash-lite",  label: "3.1 Flash Lite",vision: false, desc: "Ultra-ringan dan cepat. Terbaik untuk volume tinggi dan workload sensitif biaya." },
-    { id: "gemini-3.0-pro",         label: "3.0 Pro",       vision: false, desc: "Performa seimbang untuk multi-turn conversation dan task berbasis pengetahuan." },
-    { id: "gemini-3.0-flash",       label: "3.0 Flash",     vision: false, desc: "Optimasi kecepatan dengan 1M context. Cocok untuk real-time dan chat interface." },
-    { id: "gemini-2.5-pro",         label: "2.5 Pro",       vision: false, desc: "Reasoning solid dan teruji. Andal untuk task coding sehari-hari." },
-    { id: "gemini-2.5-flash",       label: "2.5 Flash",     vision: false, desc: "Hemat biaya dengan kemampuan thinking. Rasio harga-performa terbaik." }
+    { id: "gemini-3.1-pro-preview",          label: "3.1 Pro Preview",       vision: false, desc: "Flagship Gemini terbaru. Reasoning kuat dengan 1M context." },
+    { id: "gemini-3.1-flash-lite-preview",   label: "3.1 Flash Lite Preview",vision: false, desc: "Ultra-ringan dan cepat. Terbaik untuk volume tinggi." },
+    { id: "gemini-3-pro-preview",            label: "3 Pro Preview",         vision: false, desc: "Gemini 3 Pro untuk multi-turn conversation." },
+    { id: "gemini-3-flash-preview",          label: "3 Flash Preview",       vision: false, desc: "Optimasi kecepatan dengan 1M context." },
+    { id: "gemini-2.0-flash-lite",           label: "2.0 Flash Lite",        vision: false, desc: "Hemat biaya dengan response cepat." },
+    { id: "google/gemini-2.5-pro",           label: "2.5 Pro (Google)",      vision: false, desc: "Gemini 2.5 Pro via Google endpoint." },
+    { id: "google/gemini-2.5-flash",         label: "2.5 Flash (Google)",    vision: false, desc: "Gemini 2.5 Flash via Google endpoint." }
   ]},
   { group: "DeepSeek", icon: Code2,    color: "#06b6d4", models: [
-    { id: "deepseek-v3", label: "DeepSeek V3", vision: false, desc: "MoE architecture — reasoning dan coding kuat dengan biaya lebih rendah. 200K context." }
+    { id: "deepseek-3.2",             label: "V3.2",         vision: false, desc: "MoE architecture — reasoning dan coding kuat dengan biaya lebih rendah." },
+    { id: "deepseek-v4-flash",        label: "V4 Flash",     vision: false, desc: "DeepSeek V4 Flash — cepat dan ringan untuk tugas sehari-hari." },
+    { id: "deepseek-v4-pro",          label: "V4 Pro",       vision: false, desc: "DeepSeek V4 Pro — coding & debugging optimal." },
+    { id: "deepseek/deepseek-chat",     label: "DeepSeek Chat",     vision: false, desc: "DeepSeek Chat via DeepSeek endpoint." },
+    { id: "deepseek/deepseek-reasoner", label: "DeepSeek Reasoner", vision: false, desc: "DeepSeek Reasoner via DeepSeek endpoint." }
   ]},
   { group: "Qwen",     icon: Bot,      color: "#f472b6", models: [
     { id: "qwen3-coder-next", label: "Qwen 3 Coder", vision: false, desc: "Next-gen coding model dari Alibaba. Agentic capabilities untuk task coding kompleks." }
   ]},
-  { group: "Moonshot", icon: Bot,      color: "#a78bfa", models: [
-    { id: "kimi-k2.5", label: "Kimi K2.5", vision: false, desc: "Long-context specialist (250K). Kuat untuk coding dan tool-use dengan konteks besar." }
-  ]},
   { group: "MiniMax",  icon: Bot,      color: "#f59e0b", models: [
-    { id: "minimax-m2.5", label: "MiniMax M2.5", vision: false, desc: "Multimodal AI dengan output kreatif. Serbaguna untuk teks dan task kreatif." }
+    { id: "MiniMax-M2.5", label: "MiniMax M2.5", vision: false, desc: "Multimodal AI dengan output kreatif. Serbaguna untuk teks dan task kreatif." }
   ]},
   { group: "GLM",      icon: Bot,      color: "#34d399", models: [
-    { id: "glm-5", label: "GLM-5", vision: false, desc: "GLM terbaru dari Zhipu AI. Enhanced reasoning dengan dukungan bilingual (EN/CN)." }
+    { id: "glm-5",   label: "GLM-5",   vision: false, desc: "GLM-5 dari Zhipu AI. Enhanced reasoning bilingual." },
+    { id: "glm-5.1", label: "GLM-5.1", vision: false, desc: "GLM-5.1 terbaru. Performa ditingkatkan." }
+  ]},
+  { group: "Gemma",    icon: Bot,      color: "#ec4899", models: [
+    { id: "gemma-4-31b-it", label: "Gemma 4 31B", vision: false, desc: "Google Gemma 4 31B instruct-tuned. Model terbuka dengan performa kuat." }
   ]}
 ];
 

@@ -160,36 +160,37 @@ function avatarUploadSingle(req, res, next) {
 
 const FULL_MODEL_LIST = [
   // Anthropic (Claude)
-  { id: "claude-opus-4.6",    provider: "Claude",   label: "Opus 4.6",     vision: false },
-  { id: "claude-sonnet-4.5",  provider: "Claude",   label: "Sonnet 4.5",   vision: false },
-  { id: "claude-sonnet-4",    provider: "Claude",   label: "Sonnet 4",     vision: false },
-  { id: "claude-haiku-4.5",   provider: "Claude",   label: "Haiku 4.5",    vision: false },
-  // OpenAI (GPT)
-  { id: "gpt-5.5",            provider: "OpenAI",   label: "GPT-5.5",         vision: false },
-  { id: "gpt-5.4",            provider: "OpenAI",   label: "GPT-5.4",         vision: false },
-  { id: "gpt-5.3-codex",      provider: "OpenAI",   label: "GPT-5.3 Codex",   vision: false },
-  { id: "gpt-5.2",            provider: "OpenAI",   label: "GPT-5.2",         vision: false },
-  { id: "gpt-5.1",            provider: "OpenAI",   label: "GPT-5.1",         vision: false },
-  { id: "gpt-5.1-codex",      provider: "OpenAI",   label: "GPT-5.1 Codex",   vision: false },
-  { id: "gpt-5.1-codex-max",  provider: "OpenAI",   label: "GPT-5.1 Codex Max", vision: false },
-  { id: "gpt-4o",             provider: "OpenAI",   label: "GPT-4o",          vision: false },
+  { id: "claude-opus-4.6",        provider: "Claude",   label: "Opus 4.6",     vision: false },
+  { id: "claude-opus-4-6",        provider: "Claude",   label: "Opus 4.6 2",   vision: false },
+  { id: "claude-opus-4.7",        provider: "Claude",   label: "Opus 4.7",     vision: false },
+  { id: "claude-sonnet-4.5",      provider: "Claude",   label: "Sonnet 4.5",   vision: false },
+  { id: "claude-haiku-4.5",       provider: "Claude",   label: "Haiku 4.5",    vision: false },
+  { id: "claude-haiku-4-5-20251001", provider: "Claude", label: "Haiku 4.5 2",  vision: false },
+  // OpenAI
+  { id: "openai/o3",              provider: "OpenAI",   label: "o3",            vision: false },
   // Google (Gemini)
-  { id: "gemini-3.1-pro",         provider: "Gemini", label: "Gemini 3.1 Pro",       vision: false },
-  { id: "gemini-3.1-flash-lite",  provider: "Gemini", label: "Gemini 3.1 Flash Lite",vision: false },
-  { id: "gemini-3.0-pro",         provider: "Gemini", label: "Gemini 3.0 Pro",       vision: false },
-  { id: "gemini-3.0-flash",       provider: "Gemini", label: "Gemini 3.0 Flash",     vision: false },
-  { id: "gemini-2.5-pro",         provider: "Gemini", label: "Gemini 2.5 Pro",       vision: false },
-  { id: "gemini-2.5-flash",       provider: "Gemini", label: "Gemini 2.5 Flash",     vision: false },
+  { id: "gemini-3.1-pro-preview",       provider: "Gemini", label: "3.1 Pro Preview",      vision: false },
+  { id: "gemini-3.1-flash-lite-preview",provider: "Gemini", label: "3.1 Flash Lite Preview",vision: false },
+  { id: "gemini-3-pro-preview",         provider: "Gemini", label: "3 Pro Preview",          vision: false },
+  { id: "gemini-3-flash-preview",       provider: "Gemini", label: "3 Flash Preview",        vision: false },
+  { id: "gemini-2.0-flash-lite",        provider: "Gemini", label: "2.0 Flash Lite",          vision: false },
+  { id: "google/gemini-2.5-pro",        provider: "Gemini", label: "2.5 Pro",                 vision: false },
+  { id: "google/gemini-2.5-flash",      provider: "Gemini", label: "2.5 Flash",               vision: false },
   // DeepSeek
-  { id: "deepseek-v3",        provider: "DeepSeek", label: "DeepSeek V3",   vision: false },
+  { id: "deepseek-3.2",           provider: "DeepSeek", label: "V3.2",          vision: false },
+  { id: "deepseek-v4-flash",      provider: "DeepSeek", label: "V4 Flash",      vision: false },
+  { id: "deepseek-v4-pro",        provider: "DeepSeek", label: "V4 Pro",        vision: false },
+  { id: "deepseek/deepseek-chat",     provider: "DeepSeek", label: "DeepSeek Chat",     vision: false },
+  { id: "deepseek/deepseek-reasoner", provider: "DeepSeek", label: "DeepSeek Reasoner", vision: false },
   // Qwen
-  { id: "qwen3-coder-next",   provider: "Qwen",     label: "Qwen 3 Coder",  vision: false },
-  // Moonshot (Kimi)
-  { id: "kimi-k2.5",          provider: "Moonshot", label: "Kimi K2.5",     vision: false },
+  { id: "qwen3-coder-next",       provider: "Qwen",     label: "Qwen 3 Coder",  vision: false },
   // MiniMax
-  { id: "minimax-m2.5",       provider: "MiniMax",  label: "MiniMax M2.5",  vision: false },
-  // Zhipu AI (GLM)
-  { id: "glm-5",              provider: "GLM",      label: "GLM-5",         vision: false }
+  { id: "MiniMax-M2.5",           provider: "MiniMax",  label: "MiniMax M2.5",  vision: false },
+  // GLM (Zhipu AI)
+  { id: "glm-5",                  provider: "GLM",      label: "GLM-5",         vision: false },
+  { id: "glm-5.1",                provider: "GLM",      label: "GLM-5.1",       vision: false },
+  // Google Gemma
+  { id: "gemma-4-31b-it",         provider: "Gemma",    label: "Gemma 4 31B",   vision: false }
 ];
 
 function getModelConfig(key) {
@@ -213,9 +214,9 @@ const MODEL_CONFIG = {
     allowedForFree: true
   },
   balanced: {
-    id: process.env.MODEL_BALANCED || "deepseek-v3",
+    id: process.env.MODEL_BALANCED || "deepseek-3.2",
     label: "Balanced",
-    description: "DeepSeek V3 serba guna & hemat",
+    description: "DeepSeek V3.2 serba guna & hemat",
     vision: false,
     allowedForFree: true
   },
@@ -227,9 +228,9 @@ const MODEL_CONFIG = {
     allowedForFree: false
   },
   coding: {
-    id: process.env.MODEL_CODING || "gpt-5.3-codex",
+    id: process.env.MODEL_CODING || "deepseek-v4-pro",
     label: "Coding",
-    description: "GPT-5.3 Codex coding & debug",
+    description: "DeepSeek V4 Pro coding & debug",
     vision: false,
     allowedForFree: false
   }
@@ -975,7 +976,7 @@ function buildSystemPrompt() {
   ].join(" ");
 }
 
-async function callX5LabStream({ modelId, text, file, history, contextText, sendImageBlock }) {
+async function callX5LabStream({ modelId, text, file, history, contextText, sendImageBlock, systemPrompt, temperature, maxTokens }) {
   if (!process.env.X5LAB_API_KEY) {
     throw new Error("X5LAB_API_KEY belum diisi di .env backend.");
   }
@@ -990,40 +991,64 @@ async function callX5LabStream({ modelId, text, file, history, contextText, send
     : imageAwareText;
 
   const messages = [
-    { role: "system", content: buildSystemPrompt() },
+    { role: "system", content: systemPrompt || buildSystemPrompt() },
     ...history.map(mapHistoryMessage),
     { role: "user", content: userContent }
   ];
 
-  const response = await fetch("https://api.x5lab.dev/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${process.env.X5LAB_API_KEY}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      model: modelId,
-      messages,
-      temperature: 0.7,
-      max_tokens: MAX_OUTPUT_TOKENS,
-      stream: true
-    })
-  });
+  const MAX_RETRIES = 2;
 
-  if (!response.ok) {
-    const rawText = await response.text();
-    let data;
-    try { data = JSON.parse(rawText); } catch { data = null; }
-    const detail = data?.error?.message || data?.error || rawText || `HTTP ${response.status}`;
-    const error = new Error(typeof detail === "string" ? detail : JSON.stringify(detail));
-    error.status = response.status;
-    throw error;
+  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      if (attempt > 0) {
+        const delay = Math.min(1000 * Math.pow(2, attempt - 1), 4000);
+        console.log(`Retry stream (attempt ${attempt + 1}/${MAX_RETRIES + 1}) after ${delay}ms`);
+        await new Promise((r) => setTimeout(r, delay));
+      }
+
+      const response = await fetch("https://api.x5lab.dev/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${process.env.X5LAB_API_KEY}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          model: modelId,
+          messages,
+          temperature: temperature != null ? temperature : 0.7,
+          max_tokens: maxTokens || MAX_OUTPUT_TOKENS,
+          stream: true
+        }),
+        signal: AbortSignal.timeout(120000)
+      });
+
+      if (!response.ok) {
+        const rawText = await response.text();
+        let data;
+        try { data = JSON.parse(rawText); } catch { data = null; }
+        const detail = data?.error?.message || data?.error || rawText || `HTTP ${response.status}`;
+        const isRetryable = [429, 500, 502, 503].includes(response.status) ||
+          String(detail).includes("at capacity") ||
+          String(detail).includes("E200");
+        if (isRetryable && attempt < MAX_RETRIES) { continue; }
+        const error = new Error(typeof detail === "string" ? detail : JSON.stringify(detail));
+        error.status = response.status;
+        throw error;
+      }
+
+      return response.body;
+    } catch (err) {
+      if (err.name === "TimeoutError") {
+        if (attempt < MAX_RETRIES) { continue; }
+        throw new Error("AI provider timeout setelah beberapa percobaan.");
+      }
+      if (attempt >= MAX_RETRIES) throw err;
+    }
   }
-
-  return response.body;
+  throw new Error("AI provider gagal setelah retry.");
 }
 
-async function callX5Lab({ modelId, text, file, history, contextText, sendImageBlock }) {
+async function callX5Lab({ modelId, text, file, history, contextText, sendImageBlock, systemPrompt, temperature, maxTokens }) {
   if (!process.env.X5LAB_API_KEY) {
     throw new Error("X5LAB_API_KEY belum diisi di .env backend.");
   }
@@ -1048,7 +1073,7 @@ async function callX5Lab({ modelId, text, file, history, contextText, sendImageB
   const messages = [
     {
       role: "system",
-      content: buildSystemPrompt()
+      content: systemPrompt || buildSystemPrompt()
     },
     ...history.map(mapHistoryMessage),
     {
@@ -1077,8 +1102,8 @@ async function callX5Lab({ modelId, text, file, history, contextText, sendImageB
         body: JSON.stringify({
           model: modelId,
           messages,
-          temperature: 0.7,
-          max_tokens: MAX_OUTPUT_TOKENS
+          temperature: temperature != null ? temperature : 0.7,
+          max_tokens: maxTokens || MAX_OUTPUT_TOKENS
         }),
         signal: AbortSignal.timeout(120000)
       });
@@ -1093,9 +1118,12 @@ async function callX5Lab({ modelId, text, file, history, contextText, sendImageB
       }
 
       if (!response.ok) {
-        const isRetryable = [429, 500, 502, 503].includes(response.status);
+        const detail = data?.error?.message || data?.error || rawText || `HTTP ${response.status}`;
+        const isRetryable = [429, 500, 502, 503].includes(response.status) ||
+          String(detail).includes("at capacity") ||
+          String(detail).includes("E200");
         if (isRetryable && attempt < MAX_RETRIES) {
-          lastError = new Error(data?.error?.message || data?.error || `HTTP ${response.status}`);
+          lastError = new Error(typeof detail === "string" ? detail : JSON.stringify(detail));
           lastError.status = response.status;
           continue;
         }
@@ -1103,6 +1131,20 @@ async function callX5Lab({ modelId, text, file, history, contextText, sendImageB
         const error = new Error(typeof detail === "string" ? detail : JSON.stringify(detail));
         error.status = response.status;
         throw error;
+      }
+
+      if (!data?.choices?.[0]?.message?.content) {
+        const bodyError = data?.error?.message || data?.error || "";
+        if (bodyError) {
+          const isRetryable = String(bodyError).includes("at capacity") || String(bodyError).includes("E200");
+          if (isRetryable && attempt < MAX_RETRIES) {
+            lastError = new Error(typeof bodyError === "string" ? bodyError : JSON.stringify(bodyError));
+            continue;
+          }
+          const error = new Error(typeof bodyError === "string" ? bodyError : JSON.stringify(bodyError));
+          error.status = 200;
+          throw error;
+        }
       }
 
       const answer = data?.choices?.[0]?.message?.content || "AI tidak mengirim jawaban.";
