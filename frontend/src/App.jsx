@@ -256,6 +256,8 @@ export default function App() {
   const [maxTokens, setMaxTokens] = useState(Number(localStorage.getItem("um_max_tokens")) || 4096);
   const [webSearch, setWebSearch] = useState(false);
   const [searchResults, setSearchResults] = useState(null);
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [installable, setInstallable] = useState(false);
 
   const fileInputRef = useRef(null);
   const avatarInputRef = useRef(null);
@@ -344,6 +346,12 @@ export default function App() {
     document.addEventListener("mousedown", handleClick);
     return () => document.removeEventListener("mousedown", handleClick);
   }, [modelSwitchOpen]);
+
+  useEffect(() => {
+    const handler = (e) => { e.preventDefault(); setDeferredPrompt(e); setInstallable(true); };
+    window.addEventListener("beforeinstallprompt", handler);
+    return () => window.removeEventListener("beforeinstallprompt", handler);
+  }, []);
 
   async function bootstrap(activeToken = token) {
     if (!activeToken) {
@@ -1388,6 +1396,15 @@ export default function App() {
           <LogOut size={17} />
           Logout
         </button>
+
+        {installable && (
+          <button className="install-button" onClick={async () => {
+            if (deferredPrompt) { deferredPrompt.prompt(); const result = await deferredPrompt.userChoice; setInstallable(false); setDeferredPrompt(null); }
+          }}>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Install App
+          </button>
+        )}
       </aside>
 
       <section className="main-panel">
