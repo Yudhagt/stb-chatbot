@@ -1261,9 +1261,10 @@ export default function App() {
           <Search size={16} />
           <input
             value={search}
-            onChange={(event) => setSearch(event.target.value)}
+            onChange={(event) => { setSearch(event.target.value); searchConversations(event.target.value); }}
             placeholder="Search chats"
           />
+          {searchResults && <button className="clear-search" onClick={() => { setSearch(""); setSearchResults(null); }}><X size={14} /></button>}
         </div>
 
         {conversations.length > 0 && (
@@ -1271,6 +1272,24 @@ export default function App() {
             <Trash2 size={15} />
             Delete all chats
           </button>
+        )}
+
+        {searchResults && (
+          <div className="search-results">
+            <p className="search-result-label">Conversations ({searchResults.conversations?.length || 0})</p>
+            {searchResults.conversations?.slice(0, 5).map((c) => (
+              <button key={c.id} className="history-item" onClick={() => { loadConversation(c.id); setSearch(""); setSearchResults(null); }}>
+                <strong>{c.title}</strong>
+              </button>
+            ))}
+            <p className="search-result-label">Messages ({searchResults.messages?.length || 0})</p>
+            {searchResults.messages?.slice(0, 5).map((m) => (
+              <button key={m.id} className="history-item" onClick={() => { loadConversation(m.conversationId); setSearch(""); setSearchResults(null); }}>
+                <strong>{m.conversation?.title || "Chat"}</strong>
+                <span>{m.content?.slice(0, 80)}...</span>
+              </button>
+            ))}
+          </div>
         )}
 
         <div className="history-list">
@@ -1386,6 +1405,17 @@ export default function App() {
                 <polyline points="6 9 12 15 18 9" />
               </svg>
             </button>
+
+            {activeConversation?.id && (
+              <button
+                className="icon-action export-btn"
+                onClick={() => exportChat(activeConversation.id)}
+                title="Download chat sebagai Markdown"
+                style={{ marginLeft: 8 }}
+              >
+                <FileText size={17} />
+              </button>
+            )}
 
             {modelSwitchOpen && (
               <div className="model-switch-dropdown">
@@ -1678,6 +1708,10 @@ export default function App() {
                   <Zap size={17} />
                   Usage
                 </button>
+                <button className={settingsTab === "ai" ? "active" : ""} onClick={() => setSettingsTab("ai")}>
+                  <Brain size={17} />
+                  AI
+                </button>
                 {isAdmin && (
                   <button className={settingsTab === "admin" ? "active" : ""} onClick={() => {
                     setSettingsTab("admin");
@@ -1887,6 +1921,53 @@ export default function App() {
                     <p className="muted-copy">
                       Limit dihitung per hari per akun. Admin punya limit lebih besar dan akses semua model.
                     </p>
+                  </div>
+                )}
+
+                {settingsTab === "ai" && (
+                  <div className="settings-section">
+                    <h3>AI Settings</h3>
+                    <p className="muted-copy">Atur cara AI merespon pesan kamu.</p>
+
+                    <div className="settings-form">
+                      <label>
+                        System Prompt
+                        <textarea
+                          value={systemPrompt}
+                          onChange={(e) => { setSystemPrompt(e.target.value); localStorage.setItem("um_system_prompt", e.target.value); }}
+                          placeholder="Contoh: Kamu adalah asisten coding yang jawab dalam Bahasa Indonesia."
+                          rows={4}
+                          style={{ resize: "vertical", fontFamily: "inherit", padding: "8px 10px", borderRadius: 8, border: "1px solid var(--border)", background: "var(--card-bg)", color: "var(--text)" }}
+                        />
+                        <small>Instruksi awal untuk AI. Kosongkan untuk default.</small>
+                      </label>
+
+                      <label>
+                        Temperature: {temperature}
+                        <input
+                          type="range"
+                          min="0"
+                          max="2"
+                          step="0.1"
+                          value={temperature}
+                          onChange={(e) => { const v = parseFloat(e.target.value); setTemperature(v); localStorage.setItem("um_temperature", String(v)); }}
+                        />
+                        <small>0 = konsisten, 1 = kreatif, 2 = sangat kreatif</small>
+                      </label>
+
+                      <label>
+                        Max Tokens: {maxTokens}
+                        <input
+                          type="range"
+                          min="512"
+                          max="16384"
+                          step="512"
+                          value={maxTokens}
+                          onChange={(e) => { const v = parseInt(e.target.value); setMaxTokens(v); localStorage.setItem("um_max_tokens", String(v)); }}
+                        />
+                        <small>Maksimal token per respons. 4096 = ~3000 kata.</small>
+                      </label>
+                    </div>
                   </div>
                 )}
 
