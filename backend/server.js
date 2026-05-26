@@ -193,6 +193,13 @@ const FULL_MODEL_LIST = [
   { id: "gemma-4-31b-it",         provider: "Gemma",    label: "Gemma 4 31B",   vision: false }
 ];
 
+const FALLBACK_CHAIN = [
+  "deepseek-3.2", "deepseek-v4-flash", "claude-haiku-4.5",
+  "deepseek-v4-pro", "qwen3-coder-next",
+  "claude-sonnet-4.5", "glm-5", "gemini-3-flash-preview",
+  "claude-opus-4.6", "gemini-3.1-pro-preview"
+];
+
 function getModelConfig(key) {
   if (MODEL_CONFIG[key]) return MODEL_CONFIG[key];
   const found = FULL_MODEL_LIST.find(m => m.id === key);
@@ -1127,7 +1134,6 @@ async function callX5Lab({ modelId, text, file, history, contextText, sendImageB
           lastError.status = response.status;
           continue;
         }
-        const detail = data?.error?.message || data?.error || rawText || `HTTP ${response.status}`;
         const error = new Error(typeof detail === "string" ? detail : JSON.stringify(detail));
         error.status = response.status;
         throw error;
@@ -2392,44 +2398,59 @@ app.post("/api/chat", auth, uploadSingle, async (req, res) => {
     });
 
     let aiResult;
+    let usedModelId = model.id;
 
-    try {
-      aiResult = await callX5Lab({
-        modelId: model.id,
-        text: text || (repoUrl ? "Tolong analisis GitHub repo ini." : "Tolong analisis lampiran ini."),
-        file,
-        history: orderedHistory,
-        contextText,
-        sendImageBlock: Boolean(model.vision && file && isImageFile(file))
-      });
-    } catch (error) {
-      const status = error.status || 500;
-      const detail = error.message || "Gagal menghubungi AI provider.";
-
-      const assistantMessage = await prisma.message.create({
-        data: {
-          conversationId: conversation.id,
-          userId: req.user.id,
-          role: "ASSISTANT",
-          content:
-            status === 402
-              ? "Token AI sedang habis."
-              : `AI provider error: ${detail}`,
-          model: selectedKey
+    for (let fb = 0; fb <= FALLBACK_CHAIN.length; fb++) {
+      try {
+        aiResult = await callX5Lab({
+          modelId: usedModelId,
+          text: text || (repoUrl ? "Tolong analisis GitHub repo ini." : "Tolong analisis lampiran ini."),
+          file,
+          history: orderedHistory,
+          contextText,
+          sendImageBlock: Boolean(model.vision && file && isImageFile(file)),
+          systemPrompt: req.body.systemPrompt,
+          temperature: req.body.temperature,
+          maxTokens: req.body.maxTokens
+        });
+        break;
+      } catch (error) {
+        const isCapacity = String(error.message || "").includes("at capacity") || String(error.message || "").includes("E200");
+        if (isCapacity && fb < FALLBACK_CHAIN.length) {
+          const nextId = FALLBACK_CHAIN[fb];
+          if (nextId === usedModelId) continue;
+          usedModelId = nextId;
+          console.log(`Fallback to model: ${usedModelId}`);
+          continue;
         }
-      });
+        const status = error.status || 500;
+        const detail = error.message || "Gagal menghubungi AI provider.";
 
-      return res.status(status >= 400 && status < 600 ? status : 500).json({
-        error: assistantMessage.content,
-        conversation,
-        userMessage,
-        assistantMessage,
-        usage: {
-          messageCount: usage.messageCount,
-          tokenCount: usage.tokenCount,
-          limit
-        }
-      });
+        const assistantMessage = await prisma.message.create({
+          data: {
+            conversationId: conversation.id,
+            userId: req.user.id,
+            role: "ASSISTANT",
+            content:
+              status === 402
+                ? "Token AI sedang habis."
+                : `AI provider error: ${detail}`,
+            model: selectedKey
+          }
+        });
+
+        return res.status(status >= 400 && status < 600 ? status : 500).json({
+          error: assistantMessage.content,
+          conversation,
+          userMessage,
+          assistantMessage,
+          usage: {
+            messageCount: usage.messageCount,
+            tokenCount: usage.tokenCount,
+            limit
+          }
+        });
+      }
     }
 
     const assistantMessage = await prisma.message.create({
