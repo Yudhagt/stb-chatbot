@@ -1398,6 +1398,7 @@ export default function App() {
                     <button
                       key={item.key}
                       className={`model-option ${model === item.key ? "active" : ""} ${locked ? "locked" : ""}`}
+                      title={`${item.label}: ${item.desc}${locked ? " (khusus admin)" : ""}`}
                       onClick={() => {
                         if (!locked) {
                           chooseModel(item.key);
@@ -1434,6 +1435,7 @@ export default function App() {
                         <button
                           key={m.id}
                           className={`model-option ${isActive ? "active" : ""}`}
+                          title={`${m.label} — ${group.group} (${m.id})`}
                           onClick={() => {
                             chooseModel(m.id);
                             setModelSwitchOpen(false);
