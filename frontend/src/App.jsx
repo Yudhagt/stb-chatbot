@@ -43,7 +43,7 @@ const MODEL_PRESETS = [
   { key: "fast",    label: "Fast",     desc: "Claude Haiku 4.5 — paling cepat, cocok untuk chat ringan, ringkasan, dan tugas sederhana dengan respons instan",    icon: Zap,     vision: false, free: true },
   { key: "balanced",label: "Balanced", desc: "DeepSeek V3.2 — serba guna dengan performa kuat, hemat token, cocok untuk obrolan harian dan tugas umum", icon: Sparkles,vision: false, free: true },
   { key: "smart",   label: "Smart",    desc: "Claude Sonnet 4.5 — analisis mendalam, coding kompleks, riset, dan pemecahan masalah tingkat lanjut",    icon: Brain,   vision: false, free: false },
-  { key: "coding",  label: "Coding",   desc: "DeepSeek V4 Pro — spesialis coding & debugging, optimal untuk software engineering dan code review",   icon: Code2,   vision: false, free: false }
+  { key: "coding",  label: "Coding",   desc: "Qwen 3 Coder — spesialis coding & debugging, optimal untuk software engineering dan code review",   icon: Code2,   vision: false, free: false }
 ];
 
 const ALL_MODELS = [
@@ -69,8 +69,6 @@ const ALL_MODELS = [
   ]},
   { group: "DeepSeek", icon: Code2,    color: "#06b6d4", models: [
     { id: "deepseek-3.2",             label: "V3.2",         vision: false, desc: "MoE architecture — reasoning dan coding kuat dengan biaya lebih rendah." },
-    { id: "deepseek-v4-flash",        label: "V4 Flash",     vision: false, desc: "DeepSeek V4 Flash — cepat dan ringan untuk tugas sehari-hari." },
-    { id: "deepseek-v4-pro",          label: "V4 Pro",       vision: false, desc: "DeepSeek V4 Pro — coding & debugging optimal." },
     { id: "deepseek/deepseek-chat",     label: "DeepSeek Chat",     vision: false, desc: "DeepSeek Chat via DeepSeek endpoint." },
     { id: "deepseek/deepseek-reasoner", label: "DeepSeek Reasoner", vision: false, desc: "DeepSeek Reasoner via DeepSeek endpoint." }
   ]},

@@ -178,8 +178,6 @@ const FULL_MODEL_LIST = [
   { id: "google/gemini-2.5-flash",      provider: "Gemini", label: "2.5 Flash",               vision: false },
   // DeepSeek
   { id: "deepseek-3.2",           provider: "DeepSeek", label: "V3.2",          vision: false },
-  { id: "deepseek-v4-flash",      provider: "DeepSeek", label: "V4 Flash",      vision: false },
-  { id: "deepseek-v4-pro",        provider: "DeepSeek", label: "V4 Pro",        vision: false },
   { id: "deepseek/deepseek-chat",     provider: "DeepSeek", label: "DeepSeek Chat",     vision: false },
   { id: "deepseek/deepseek-reasoner", provider: "DeepSeek", label: "DeepSeek Reasoner", vision: false },
   // Qwen
@@ -194,8 +192,8 @@ const FULL_MODEL_LIST = [
 ];
 
 const FALLBACK_CHAIN = [
-  "deepseek-3.2", "deepseek-v4-flash", "claude-haiku-4.5",
-  "deepseek-v4-pro", "qwen3-coder-next",
+  "deepseek-3.2", "claude-haiku-4.5",
+  "qwen3-coder-next",
   "claude-sonnet-4.5", "glm-5", "gemini-3-flash-preview",
   "claude-opus-4.6", "gemini-3.1-pro-preview"
 ];
@@ -235,9 +233,9 @@ const MODEL_CONFIG = {
     allowedForFree: false
   },
   coding: {
-    id: process.env.MODEL_CODING || "deepseek-v4-pro",
+    id: process.env.MODEL_CODING || "qwen3-coder-next",
     label: "Coding",
-    description: "DeepSeek V4 Pro coding & debug",
+    description: "Qwen 3 Coder coding & debug",
     vision: false,
     allowedForFree: false
   }
