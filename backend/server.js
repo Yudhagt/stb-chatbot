@@ -201,13 +201,17 @@ const FALLBACK_CHAIN = [
 function getModelConfig(key) {
   if (MODEL_CONFIG[key]) return MODEL_CONFIG[key];
   const found = FULL_MODEL_LIST.find(m => m.id === key);
-  return {
-    id: key,
-    label: found?.label || key,
-    description: found ? `${found.provider} ${found.label}` : key,
-    vision: found ? found.vision : false,
-    allowedForFree: true
-  };
+  if (found) {
+    return {
+      id: key,
+      label: found?.label || key,
+      description: found ? `${found.provider} ${found.label}` : key,
+      vision: found ? found.vision : false,
+      allowedForFree: true
+    };
+  }
+  // Unknown model — fallback ke balanced
+  return MODEL_CONFIG.balanced;
 }
 
 const MODEL_CONFIG = {
